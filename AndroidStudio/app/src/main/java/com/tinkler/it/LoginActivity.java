@@ -8,6 +8,7 @@ import com.parse.ParseUser;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -18,7 +19,7 @@ import android.widget.Toast;
 import api.QCApi;
 import api.QCApi.VerifyEmailCallback;
 
-public class LoginActivity extends Activity implements VerifyEmailCallback{
+public class LoginActivity extends AppCompatActivity implements VerifyEmailCallback{
 
 	private EditText mUsernameEditText;
 	private EditText mPassswordEditText;
@@ -27,9 +28,9 @@ public class LoginActivity extends Activity implements VerifyEmailCallback{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-	    getActionBar().hide();
+		super.onCreate(savedInstanceState);
+		getSupportActionBar().hide();
 		setContentView(R.layout.activity_login);
 
 		Parse.initialize(this, "cw3jgrLq6MFIDoaYln4DEKDsJeUIF3GACepXNiMN", "zqfETbeQXwLqDvcZeW0OHYnbPkpcmFt7VTRG6Roh");
