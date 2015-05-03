@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    tools:context=".LoginActivity" >
+
+    <EditText
+        android:id="@+id/username_edit_text"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:inputType="textEmailAddress"
+        android:hint="username"/>
+    
+    <EditText
+        android:id="@+id/password_edit_text"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/username_edit_text"
+        android:inputType="textPassword"
+        android:hint="password"/>
+    
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/password_edit_text"
+        android:text="login"/>
+    
+    <TextView 
+        android:id="@+id/signup_text_view"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="5dp"
+        android:gravity="right"
+        android:layout_below="@id/login_button"
+        android:text="Sign up"/>
+
+</RelativeLayout>
