@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/libs/armeabi-v7a.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="3c070d5b4581f45c0714c5a318cb09e5b58bff65">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/armeabi-v7a-d0f41c923014fd9df7a06df9c54b1140324f54f6.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/classes-a18d7413ae323ed48d10fc1671901dcbdcaa6eb1.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/libs/zbar.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="7bbdf7ba57a8a157c0cad51e455609c70887812e">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/zbar-c880577da50f328b641509450c1c8effa5fafcf4.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a3ff3c506644c820eb2bdf06e8339f72be578551">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/classes-5af5c73ee49989c6f3545ef1fa752db9a3d25692.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/libs/armeabi.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="db0c49489c87d7f3bddb9ad682ee98ef4be8bd89">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/armeabi-f5644e690bf52cd74134de24e20bbe4f8b7c831a.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/.gradle/caches/modules-2/files-2.1/com.parse.bolts/bolts-android/1.2.0/6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd/bolts-android-1.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/bolts-android-1.2.0-449a990820669209683df8d59d5e7fc522c51b6f.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.1.1/jars/libs/internal_impl-22.1.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="9e070ad32b2700b0343e8e0cccc437733d91ba3a">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/internal_impl-22.1.1-0104e5d551f06d84e6f98745da99fd148fff8ec1.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/libs/Parse-1.9.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1b065010f3c9d441ede9078aca8eabcd1c81e647">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/Parse-1.9.1-ee8a9e3c30e1e598a338a8c6ff1b12afd66978f0.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/libs/x86.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="3f737c05b5dbb6047b035173f0e1f7ec9b0b2b83">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/x86-306e064f7b1992060ac37f856a02398b51502a59.jar" />
+    </item>
+    <item
+        jar="/Users/miguelduartequintas/Documents/sdk/extras/android/m2repository/com/android/support/support-annotations/22.1.1/support-annotations-22.1.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
+        <dex dex="/Users/miguelduartequintas/Documents/tinkler_android/AndroidStudio/app/build/intermediates/pre-dexed/debug/support-annotations-22.1.1-5c32717f0e094df55b7df17e905a61fbb5f1baca.jar" />
+    </item>
+
+</items>
