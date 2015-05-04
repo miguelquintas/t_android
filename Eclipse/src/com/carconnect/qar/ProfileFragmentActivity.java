@@ -2,6 +2,8 @@ package com.carconnect.qar;
 
 import java.util.ArrayList;
 
+import utils.Utils;
+
 import model.Tinkler;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
@@ -22,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import api.QCApi;
 import api.QCApi.GetAllTinklersCallback;
-import api.Utils;
 
 public class ProfileFragmentActivity extends Fragment implements GetAllTinklersCallback {
 
