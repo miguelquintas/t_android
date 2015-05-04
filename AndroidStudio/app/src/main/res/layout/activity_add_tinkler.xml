@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    tools:context=".LoginActivity" >
+
+    <EditText
+        android:id="@+id/tinkler_name"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:inputType="text"
+        android:hint="Name"/>
+    
+    <Spinner
+        android:id="@+id/tinkler_type_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/tinkler_name" />
+    
+     <EditText
+        android:id="@+id/tinkler_plate"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/tinkler_type_spinner"
+        android:inputType="text"
+        android:hint="Plate"/>
+     
+	<EditText
+        android:id="@+id/tinkler_year"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/tinkler_plate"
+        android:hint="Year" />
+    
+	<ImageView 
+	    android:id="@+id/tinkler_image"
+	    android:layout_width="fill_parent"
+	    android:layout_below="@id/tinkler_year"
+	    android:layout_marginTop="5dp"
+	    android:background="@android:drawable/ic_menu_camera"
+	    android:layout_height="140dp"/>
+	
+    <Button 
+        android:id="@+id/save_button"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:layout_below="@id/tinkler_year"
+        android:background="#FFF"
+        android:text="Save"/>
+    
+    <Button 
+        android:id="@+id/delete_button"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:background="#FF0000"
+        android:text="Delete"
+        android:visibility="gone"/>
+
+</RelativeLayout>
