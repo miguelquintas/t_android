@@ -1,8 +1,10 @@
-package utils;
+package com.carconnect.qar;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import utils.StorageUtil;
 
 import android.app.Activity;
 import android.content.Intent;

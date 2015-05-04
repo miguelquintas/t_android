@@ -2,8 +2,9 @@ package com.carconnect.qar;
 
 import java.util.Calendar;
 
+import utils.Utils;
+
 import model.Tinkler;
-import utils.AttachImageActivity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -23,7 +24,6 @@ import api.QCApi;
 import api.QCApi.AddTinklerCallback;
 import api.QCApi.DeleteTinklerCallback;
 import api.QCApi.EditTinklerCallback;
-import api.Utils;
 
 public class AddTinklerActivity extends AttachImageActivity implements OnDateSetListener, AddTinklerCallback, EditTinklerCallback, DeleteTinklerCallback {
 
