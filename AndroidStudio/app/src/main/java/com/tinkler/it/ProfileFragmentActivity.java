@@ -128,7 +128,9 @@ public class ProfileFragmentActivity extends Fragment implements GetAllTinklersC
 
 			brand.setText(tinkler.getName());
 			plate.setText(tinkler.getVehiclePlate());
-			date.setText(Utils.dateToString(tinkler.getVehicleYear(), "LLL yyyy"));
+
+			if(tinkler.getVehicleYear() != null)
+				date.setText(Utils.dateToString(tinkler.getVehicleYear(), "LLL yyyy"));
 
 			return rowView;
 		}
