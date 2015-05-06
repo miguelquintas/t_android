@@ -56,12 +56,12 @@ public class QCApi {
 						tinkler.setPetBreed(object.getString("petBreed"));
 						tinkler.setColor(object.getString("color"));
 						tinkler.setBrand(object.getString("brand"));
-						tinkler.setBrand(object.getString("locationCity"));
-						tinkler.setBrand(object.getString("eventDate"));
-						tinkler.setBrand(object.getString("adType"));
+						tinkler.setLocationCity(object.getString("locationCity"));
+						tinkler.setEventDate(object.getDate("eventDate"));
+						tinkler.setAdType(object.getString("adType"));
 						tinkler.setImage(object.getParseFile("picture"));
 						tinkler.setTinkler(object.getParseFile("qrCode"));
-						tinkler.setTinklerCode(object.getInt("qrCodeKey"));
+						tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
 						tinklers.add(tinkler);
 					}
 
@@ -168,6 +168,45 @@ public class QCApi {
 		return newConversation;
 	}
 
+	public static ArrayList<Conversation> createConversationObj(ArrayList<ParseObject> objects){
+		final ArrayList<Conversation> conversations = new ArrayList<Conversation>();
+
+		for (ParseObject object : objects) {
+			//Create Message Object
+			Conversation conversation = new Conversation();
+
+			conversation.setConversationId(object.getObjectId());
+			conversation.setStarterUser(object.getParseUser("starterUser"));
+			conversation.setToTinkler(object.getParseObject("talkingToTinkler"));
+			conversation.setLastSentDate(object.getDate("lastMessageDate"));
+
+			//If the current user started this conversation then set the talkingToUser, wasDeleted, isLocked, hasUnreadMsgs
+			// and hasSentMsgs values accordingly
+			if(conversation.getStarterUser().getObjectId() == ParseUser.getCurrentUser().getObjectId()){
+				conversation.setToUser(object.getParseUser("talkingToUser"));
+				conversation.setWasDeleted(object.getBoolean("wasDeletedByStarter"));
+				conversation.setIsLocked(object.getBoolean("isLockedByStarter"));
+				conversation.setHasUnreadMsg(object.getBoolean("starterHasUnreadMsgs"));
+				conversation.setHasSentMsg(object.getBoolean("starterHasSentMsg"));
+			}else{
+				conversation.setToUser(object.getParseUser("starterUser"));
+				conversation.setWasDeleted(object.getBoolean("wasDeletedByTo"));
+				conversation.setIsLocked(object.getBoolean("isLockedByTo"));
+				conversation.setHasUnreadMsg(object.getBoolean("toHasUnreadMsgs"));
+				conversation.setHasSentMsg(object.getBoolean("toHasSentMsg"));
+			}
+
+			//Check blocked conversations and deleted conversations
+			if(!object.getBoolean("isBlocked") && !conversation.getWasDeleted()){
+				conversations.add(conversation);
+			}else{
+				System.out.println("This conversation is blocked");
+			}
+		}
+
+		return conversations;
+	}
+
 	public static void addTinkler(final Tinkler tinkler, final AddTinklerCallback callback) {
 
 		final int qrCodeKey = 1;
@@ -199,6 +238,18 @@ public class QCApi {
 
 		if (tinkler.getColor() != null) {
 			tinklerObject.put("color", tinkler.getColor());
+		}
+
+		if (tinkler.getLocationCity() != null) {
+			tinklerObject.put("locationCity", tinkler.getLocationCity());
+		}
+
+		if (tinkler.getEventDate() != null) {
+			tinklerObject.put("eventDate", tinkler.getEventDate());
+		}
+
+		if (tinkler.getAdType() != null) {
+			tinklerObject.put("adType", tinkler.getAdType());
 		}
 
 		if (tinkler.getImage() != null) {
@@ -288,12 +339,24 @@ public class QCApi {
 				tinklerObject.put("color", tinkler.getColor());
 			}
 
+			if (tinkler.getLocationCity() != null) {
+				tinklerObject.put("locationCity", tinkler.getLocationCity());
+			}
+
+			if (tinkler.getEventDate() != null) {
+				tinklerObject.put("eventDate", tinkler.getEventDate());
+			}
+
+			if (tinkler.getAdType() != null) {
+				tinklerObject.put("adType", tinkler.getAdType());
+			}
+
 			if (tinkler.getImage() != null) {
 				tinklerObject.put("picture", tinkler.getImage());
 			}
 
 			tinklerObject.put("qrCode", tinkler.getTinkler());
-			tinklerObject.put("qrCodeKey", tinkler.getTinklerCode());
+			tinklerObject.put("qrCodeKey", tinkler.getTinklerQRCodeKey());
 
 			tinklerObject.saveInBackground(new SaveCallback() {
 
@@ -369,6 +432,7 @@ public class QCApi {
 						MessageType msgType = new MessageType();
 						msgType.setId(object.getObjectId());
 						msgType.setName(object.getString("text"));
+						msgType.setTinklerType(object.getParseObject("type"));
 
 						msgTypes.add(msgType);
 					}

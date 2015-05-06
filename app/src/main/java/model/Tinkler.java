@@ -26,8 +26,13 @@ public class Tinkler implements Serializable{
 	private String brand;
 	private String color;
 
+	private String locationCity;
+
+	private Date eventDate;
+	private String adType;
+
 	private ParseFile tinkler;
-	private int tinklerCode;
+	private int tinklerQRCodeKey;
 
 	
 	public String getId() {
@@ -126,12 +131,23 @@ public class Tinkler implements Serializable{
 		this.tinkler = tinkler;
 	}
 
-	public int getTinklerCode() {
-		return tinklerCode;
+	public int getTinklerQRCodeKey() {
+		return tinklerQRCodeKey;
 	}
 
-	public void setTinklerCode(int tinklerCode) {
-		this.tinklerCode = tinklerCode;
+	public void setTinklerQRCodeKey(int tinklerQRCodeKey) {
+		this.tinklerQRCodeKey = tinklerQRCodeKey;
 	}
 
+	public String getLocationCity() { return locationCity; }
+
+	public void setLocationCity(String locationCity) { this.locationCity = locationCity;}
+
+	public Date getEventDate() {return eventDate; }
+
+	public void setEventDate(Date eventDate) { this.eventDate = eventDate; }
+
+	public String getAdType() { return adType;}
+
+	public void setAdType(String adType) { this.adType = adType;}
 }
