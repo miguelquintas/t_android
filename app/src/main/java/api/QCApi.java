@@ -10,6 +10,7 @@ import model.MessageType;
 import model.Tinkler;
 import model.TinklerType;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -68,6 +69,93 @@ public class QCApi {
 					callback.onCompleteGetAllTinklers(tinklers, true);
 				} else {
 					callback.onCompleteGetAllTinklers(null, false);
+				}
+			}
+		});
+	}
+
+	public static ArrayList<Conversation> createConversationObj(List<ParseObject> objects){
+		final ArrayList<Conversation> conversations = new ArrayList<Conversation>();
+
+		for (ParseObject object : objects) {
+			//Create Message Object
+			Conversation conversation = new Conversation();
+
+			conversation.setConversationId(object.getObjectId());
+			conversation.setStarterUser(object.getParseUser("starterUser"));
+			conversation.setToTinkler(object.getParseObject("talkingToTinkler"));
+			conversation.setLastSentDate(object.getDate("lastMessageDate"));
+
+			//If the current user started this conversation then set the talkingToUser, wasDeleted, isLocked, hasUnreadMsgs
+			// and hasSentMsgs values accordingly
+			if(conversation.getStarterUser().getObjectId() == ParseUser.getCurrentUser().getObjectId()){
+				conversation.setToUser(object.getParseUser("talkingToUser"));
+				conversation.setWasDeleted(object.getBoolean("wasDeletedByStarter"));
+				conversation.setIsLocked(object.getBoolean("isLockedByStarter"));
+				conversation.setHasUnreadMsg(object.getBoolean("starterHasUnreadMsgs"));
+				conversation.setHasSentMsg(object.getBoolean("starterHasSentMsg"));
+			}else{
+				conversation.setToUser(object.getParseUser("starterUser"));
+				conversation.setWasDeleted(object.getBoolean("wasDeletedByTo"));
+				conversation.setIsLocked(object.getBoolean("isLockedByTo"));
+				conversation.setHasUnreadMsg(object.getBoolean("toHasUnreadMsgs"));
+				conversation.setHasSentMsg(object.getBoolean("toHasSentMsg"));
+			}
+
+			//Check blocked conversations and deleted conversations
+			if(!object.getBoolean("isBlocked") && !conversation.getWasDeleted()){
+				conversations.add(conversation);
+			}else{
+				System.out.println("This conversation is blocked");
+			}
+		}
+
+		return conversations;
+	}
+
+	public static void getOnlineConversations(final GetOnlineConversationsCallback callback) {
+		//Query to get the started conversations by the current user
+		ParseQuery<ParseObject> startedConv = ParseQuery.getQuery("Conversation");
+		startedConv.whereEqualTo("starterUser", ParseUser.getCurrentUser());
+
+		//Query to get the conversations started by another user
+		ParseQuery<ParseObject> toConv = ParseQuery.getQuery("Conversation");
+		toConv.whereEqualTo("talkingToUser", ParseUser.getCurrentUser());
+
+		//Or query to get all this user's conversations
+		List<ParseQuery<ParseObject>> q = new ArrayList<ParseQuery<ParseObject>>();
+		q.add(startedConv);
+		q.add(toConv);
+
+		final ParseQuery<ParseObject> myConv = ParseQuery.or(q);
+
+		myConv.orderByDescending("lastMessageDate");
+		myConv.include("talkingToTinkler");
+		myConv.include("starterUser");
+		myConv.include("talkingToUser");
+		myConv.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				if (e == null) {
+					//The find succeeded.
+					System.out.println("Successfully retrieved" + objects.size() + " conversations");
+
+					//Unpin previous objects and then pin new collected ones
+					final List<ParseObject> localobjects = objects;
+					ParseObject.unpinAllInBackground("pinnedConversations", new DeleteCallback() {
+						public void done(ParseException e) {
+							if (e == null) {
+								ParseObject.pinAllInBackground("pinnedConversations", localobjects);
+							}else {
+								System.out.println("Error pinning conversations: " + e.getMessage());
+							}
+						}
+					});
+
+					callback.onCompleteGetOnlineConversations(createConversationObj(objects), true);
+				} else {
+					System.out.println("Error getting conversations: " + e.getMessage());
+					callback.onCompleteGetOnlineConversations(null, false);
 				}
 			}
 		});
@@ -134,8 +222,8 @@ public class QCApi {
 									isNew = true;
 								}
 							}
-							
-							if (isNew){
+
+							if (isNew) {
 								conversations.add(createNewConversation(message));
 							}
 						}
@@ -166,45 +254,6 @@ public class QCApi {
 		newConversation.setLastSentDate(message.getSentDate());
 
 		return newConversation;
-	}
-
-	public static ArrayList<Conversation> createConversationObj(ArrayList<ParseObject> objects){
-		final ArrayList<Conversation> conversations = new ArrayList<Conversation>();
-
-		for (ParseObject object : objects) {
-			//Create Message Object
-			Conversation conversation = new Conversation();
-
-			conversation.setConversationId(object.getObjectId());
-			conversation.setStarterUser(object.getParseUser("starterUser"));
-			conversation.setToTinkler(object.getParseObject("talkingToTinkler"));
-			conversation.setLastSentDate(object.getDate("lastMessageDate"));
-
-			//If the current user started this conversation then set the talkingToUser, wasDeleted, isLocked, hasUnreadMsgs
-			// and hasSentMsgs values accordingly
-			if(conversation.getStarterUser().getObjectId() == ParseUser.getCurrentUser().getObjectId()){
-				conversation.setToUser(object.getParseUser("talkingToUser"));
-				conversation.setWasDeleted(object.getBoolean("wasDeletedByStarter"));
-				conversation.setIsLocked(object.getBoolean("isLockedByStarter"));
-				conversation.setHasUnreadMsg(object.getBoolean("starterHasUnreadMsgs"));
-				conversation.setHasSentMsg(object.getBoolean("starterHasSentMsg"));
-			}else{
-				conversation.setToUser(object.getParseUser("starterUser"));
-				conversation.setWasDeleted(object.getBoolean("wasDeletedByTo"));
-				conversation.setIsLocked(object.getBoolean("isLockedByTo"));
-				conversation.setHasUnreadMsg(object.getBoolean("toHasUnreadMsgs"));
-				conversation.setHasSentMsg(object.getBoolean("toHasSentMsg"));
-			}
-
-			//Check blocked conversations and deleted conversations
-			if(!object.getBoolean("isBlocked") && !conversation.getWasDeleted()){
-				conversations.add(conversation);
-			}else{
-				System.out.println("This conversation is blocked");
-			}
-		}
-
-		return conversations;
 	}
 
 	public static void addTinkler(final Tinkler tinkler, final AddTinklerCallback callback) {
@@ -567,6 +616,14 @@ public class QCApi {
 
 	public interface GetAllConversationsCallback {
 		void onCompleteGetAllConversations(ArrayList<Conversation> conversations, boolean success);
+	}
+
+	public interface GetOnlineConversationsCallback {
+		void onCompleteGetOnlineConversations(ArrayList<Conversation> conversations, boolean success);
+	}
+
+	public interface GetLocalConversationsCallback {
+		void onCompleteGetLocalConversations(ArrayList<Conversation> conversations, boolean success);
 	}
 
 	public interface GetAllMessageTypesCallback {
