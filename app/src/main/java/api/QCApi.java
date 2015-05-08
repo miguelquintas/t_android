@@ -1,5 +1,10 @@
 package api;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +19,6 @@ import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -26,49 +30,87 @@ import com.parse.SaveCallback;
 
 public class QCApi {
 
-	public static void getAllTinklers(final GetAllTinklersCallback callback) {
+	static Context context;
 
+	public static ArrayList<Tinkler> createTinklerObj(List<ParseObject> objects){
 		final ArrayList<Tinkler> tinklers = new ArrayList<Tinkler>();
+
+		for (ParseObject object : objects) {
+			Tinkler tinkler = new Tinkler();
+			tinkler.setId(object.getObjectId());
+			tinkler.setName(object.getString("name"));
+			tinkler.setType(object.getParseObject("vehicleType"));
+			tinkler.setOwner(object.getParseUser("owner"));
+			tinkler.setVehiclePlate(object.getString("vehiclePlate"));
+			tinkler.setVehicleYear(object.getDate("vehicleYear"));
+			tinkler.setPetAge(object.getDate("petAge"));
+			tinkler.setPetBreed(object.getString("petBreed"));
+			tinkler.setColor(object.getString("color"));
+			tinkler.setBrand(object.getString("brand"));
+			tinkler.setLocationCity(object.getString("locationCity"));
+			tinkler.setEventDate(object.getDate("eventDate"));
+			tinkler.setAdType(object.getString("adType"));
+			tinkler.setImage(object.getParseFile("picture"));
+			tinkler.setTinkler(object.getParseFile("qrCode"));
+			tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
+			tinklers.add(tinkler);
+		}
+
+		return tinklers;
+	}
+
+	public static void getOnlineTinklers(final GetOnlineTinklersCallback callback) {
 
 		final ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
 		query.whereEqualTo("owner", ParseUser.getCurrentUser());
 		query.include("type");
 		query.orderByDescending("createdAt");
 		query.findInBackground(new FindCallback<ParseObject>() {
-
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
 				if (e == null) {
-					if (objects.size() == 0) {
-						query.setCachePolicy(CachePolicy.CACHE_THEN_NETWORK);
-					} else {
-						query.setCachePolicy(CachePolicy.NETWORK_ONLY);
-					}
+					// The find succeeded.
+					System.out.println("Successfully retrieved" + objects.size() + " tinklers");
 
-					for (ParseObject object : objects) {
-						Tinkler tinkler = new Tinkler();
-						tinkler.setId(object.getObjectId());
-						tinkler.setName(object.getString("name"));
-						tinkler.setType(object.getParseObject("vehicleType"));
-						tinkler.setOwner(object.getParseUser("owner"));
-						tinkler.setVehiclePlate(object.getString("vehiclePlate"));
-						tinkler.setVehicleYear(object.getDate("vehicleYear"));
-						tinkler.setPetAge(object.getDate("petAge"));
-						tinkler.setPetBreed(object.getString("petBreed"));
-						tinkler.setColor(object.getString("color"));
-						tinkler.setBrand(object.getString("brand"));
-						tinkler.setLocationCity(object.getString("locationCity"));
-						tinkler.setEventDate(object.getDate("eventDate"));
-						tinkler.setAdType(object.getString("adType"));
-						tinkler.setImage(object.getParseFile("picture"));
-						tinkler.setTinkler(object.getParseFile("qrCode"));
-						tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
-						tinklers.add(tinkler);
-					}
+					//Unpin previous objects and then pin new collected ones
+					final List<ParseObject> localobjects = objects;
+					ParseObject.unpinAllInBackground("pinnedTinklers", new DeleteCallback() {
+						public void done(ParseException e) {
+							if (e == null) {
+								ParseObject.pinAllInBackground("pinnedTinklers", localobjects);
+							} else {
+								System.out.println("Error pinning tinklers: " + e.getMessage());
+							}
+						}
+					});
 
-					callback.onCompleteGetAllTinklers(tinklers, true);
-				} else {
-					callback.onCompleteGetAllTinklers(null, false);
+					callback.onCompleteGetOnlineTinklers(createTinklerObj(objects), true);
+
+				}else {
+					System.out.println("Error getting online tinklers: " + e.getMessage());
+					callback.onCompleteGetOnlineTinklers(null, false);
+				}
+			}
+		});
+	}
+
+	public static void getLocalTinklers(final GetLocalTinklersCallback callback) {
+		final ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
+		query.whereEqualTo("owner", ParseUser.getCurrentUser());
+		query.include("type");
+		query.orderByDescending("createdAt");
+		query.fromPin("pinnedTinklers");
+		query.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				if (e == null) {
+					// The find succeeded.
+					System.out.println("Successfully retrieved" + objects.size() + " tinklers");
+
+					callback.onCompleteGetLocalTinklers(createTinklerObj(objects), true);
+				}else {
+					System.out.println("Error getting online tinklers: " + e.getMessage());
+					callback.onCompleteGetLocalTinklers(null, false);
 				}
 			}
 		});
@@ -154,106 +196,49 @@ public class QCApi {
 
 					callback.onCompleteGetOnlineConversations(createConversationObj(objects), true);
 				} else {
-					System.out.println("Error getting conversations: " + e.getMessage());
+					System.out.println("Error getting online conversations: " + e.getMessage());
 					callback.onCompleteGetOnlineConversations(null, false);
 				}
 			}
 		});
 	}
 
-	public static void getAllConversations(final GetAllConversationsCallback callback) {
-		final ArrayList<Conversation> conversations = new ArrayList<Conversation>();
+	public static void getLocalConversations(final GetLocalConversationsCallback callback){
 
-		ParseQuery<ParseObject> sentMsgs = ParseQuery.getQuery("Message");
-		sentMsgs.whereEqualTo("from", ParseUser.getCurrentUser());
-		
-		ParseQuery<ParseObject> receivedMsgs = ParseQuery.getQuery("Message");
-		receivedMsgs.whereEqualTo("to", ParseUser.getCurrentUser());
+		//Query to get the started conversations by the current user
+		ParseQuery<ParseObject> startedConv = ParseQuery.getQuery("Conversation");
+		startedConv.whereEqualTo("starterUser", ParseUser.getCurrentUser());
 
+		//Query to get the conversations started by another user
+		ParseQuery<ParseObject> toConv = ParseQuery.getQuery("Conversation");
+		toConv.whereEqualTo("talkingToUser", ParseUser.getCurrentUser());
+
+		//Or query to get all this user's conversations
 		List<ParseQuery<ParseObject>> q = new ArrayList<ParseQuery<ParseObject>>();
-		q.add(sentMsgs);
-		q.add(receivedMsgs);
+		q.add(startedConv);
+		q.add(toConv);
 
-		final ParseQuery<ParseObject> myMsgs = ParseQuery.or(q);
-		myMsgs.whereEqualTo("deletedByUser", false);
-		myMsgs.orderByAscending("createdAt");
-		myMsgs.include("type");
-		myMsgs.include("tinkler");
-		myMsgs.include("from");
-		myMsgs.include("to");
-		
-		myMsgs.findInBackground(new FindCallback<ParseObject>() {
+		final ParseQuery<ParseObject> myConv = ParseQuery.or(q);
 
+		myConv.orderByDescending("lastMessageDate");
+		myConv.include("talkingToTinkler");
+		myConv.include("starterUser");
+		myConv.include("talkingToUser");
+		myConv.fromPin("pinnedConversations");
+		myConv.findInBackground(new FindCallback<ParseObject>() {
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
 				if (e == null) {
-					if (objects.size() == 0) {
-						myMsgs.setCachePolicy(CachePolicy.CACHE_THEN_NETWORK);
-					} else {
-						myMsgs.setCachePolicy(CachePolicy.NETWORK_ONLY);
-					}
+					//The find succeeded.
+					System.out.println("Successfully retrieved" + objects.size() + " conversations");
 
-					for (ParseObject object : objects) {
-						Message message = new Message();
-						message.setId(object.getObjectId());
-						message.setType(object.getParseObject("type"));
-						message.setText(object.getString("customText"));
-						message.setFrom(object.getParseUser("from"));
-						message.setTo(object.getParseUser("to"));
-						message.setSentDate(object.getCreatedAt());
-						message.setTargetTinkler(object.getParseObject("tinkler"));
-
-						boolean isNew;
-
-						if (conversations.size() == 0) {
-							conversations.add(createNewConversation(message));
-						} else {
-							isNew = false;
-
-							for (Conversation conversation : conversations) {
-								if (message.getFrom().getUsername().equals(conversation.getToUser().getUsername()) || message.getTo().getUsername().equals(conversation.getToUser().getUsername())) {
-									if (message.getTargetTinkler().getObjectId().equals(conversation.getToTinkler().getObjectId())) {
-										conversation.getConversationMsgs().add(message);
-										isNew = false;
-									} else {
-										isNew = true;
-									}
-								} else {
-									isNew = true;
-								}
-							}
-
-							if (isNew) {
-								conversations.add(createNewConversation(message));
-							}
-						}
-
-					}
-
-					callback.onCompleteGetAllConversations(conversations, true);
+					callback.onCompleteGetLocalConversations(createConversationObj(objects), true);
 				} else {
-					callback.onCompleteGetAllConversations(null, false);
+					System.out.println("Error getting local conversations: " + e.getMessage());
+					callback.onCompleteGetLocalConversations(null, false);
 				}
 			}
 		});
-	}
-
-	public static Conversation createNewConversation(Message message) {
-		Conversation newConversation = new Conversation();
-		ArrayList<Message> messages = new ArrayList<Message>();
-
-		if (ParseUser.getCurrentUser().getUsername().equals(message.getFrom().getUsername())) {
-			newConversation.setToUser(message.getTo());
-		} else {
-			newConversation.setToUser(message.getFrom());
-		}
-
-		newConversation.setToTinkler(message.getTargetTinkler());
-		messages.add(message);
-		newConversation.setConversationMsgs(messages);
-		newConversation.setLastSentDate(message.getSentDate());
-
-		return newConversation;
 	}
 
 	public static void addTinkler(final Tinkler tinkler, final AddTinklerCallback callback) {
@@ -589,6 +574,22 @@ public class QCApi {
 		});
 	}
 
+	public static boolean isOnline() {
+		try {
+			InetAddress ipAddr = InetAddress.getByName("parse.com"); //You can replace it with your name
+
+			if (ipAddr.equals("")) {
+				return false;
+			} else {
+				return true;
+			}
+
+		} catch (Exception e) {
+			return false;
+		}
+
+	}
+
 	// Callbacks da vida
 	public interface AddTinklerCallback {
 		void onCompleteAdd(boolean success);
@@ -610,12 +611,12 @@ public class QCApi {
 		void onCompleteEditProfile(boolean success);
 	}
 
-	public interface GetAllTinklersCallback {
-		void onCompleteGetAllTinklers(ArrayList<Tinkler> tinklers, boolean success);
+	public interface GetOnlineTinklersCallback {
+		void onCompleteGetOnlineTinklers(ArrayList<Tinkler> tinklers, boolean success);
 	}
 
-	public interface GetAllConversationsCallback {
-		void onCompleteGetAllConversations(ArrayList<Conversation> conversations, boolean success);
+	public interface GetLocalTinklersCallback {
+		void onCompleteGetLocalTinklers(ArrayList<Tinkler> tinklers, boolean success);
 	}
 
 	public interface GetOnlineConversationsCallback {

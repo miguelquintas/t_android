@@ -3,12 +3,15 @@ package com.tinkler.it;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -33,8 +36,22 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 		getSupportActionBar().hide();
 		setContentView(R.layout.activity_login);
 
+		//Enable Local Datastore
+		Parse.enableLocalDatastore(getApplicationContext());
 		Parse.initialize(this, "cw3jgrLq6MFIDoaYln4DEKDsJeUIF3GACepXNiMN", "zqfETbeQXwLqDvcZeW0OHYnbPkpcmFt7VTRG6Roh");
-		
+		//Enable Push Notifications
+		ParsePush.subscribeInBackground("", new SaveCallback() {
+			@Override
+			public void done(ParseException e) {
+				if (e == null) {
+					Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+				} else {
+					Log.e("com.parse.push", "failed to subscribe for push", e);
+				}
+			}
+		});
+
+
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		if(currentUser != null){
         	userIsLoggedIn();

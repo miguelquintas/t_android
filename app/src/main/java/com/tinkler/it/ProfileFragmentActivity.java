@@ -21,10 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import api.QCApi;
-import api.QCApi.GetAllTinklersCallback;
+import api.QCApi.GetOnlineTinklersCallback;
+import api.QCApi.GetLocalTinklersCallback;
 import api.Utils;
 
-public class ProfileFragmentActivity extends Fragment implements GetAllTinklersCallback {
+public class ProfileFragmentActivity extends Fragment implements GetOnlineTinklersCallback, GetLocalTinklersCallback {
 
 	public static String STATE = "STATE";
 
@@ -43,7 +44,14 @@ public class ProfileFragmentActivity extends Fragment implements GetAllTinklersC
 	public void onStart() {
 		super.onStart();
 
-		callServer();
+		//Check internet connection
+		if(QCApi.isOnline()){
+			System.out.println("Estou Online");
+			QCApi.getOnlineTinklers(this);
+		}else{
+			System.out.println("Estou Offline");
+			QCApi.getLocalTinklers(this);
+		}
 	}
 
 	@Override
@@ -91,11 +99,6 @@ public class ProfileFragmentActivity extends Fragment implements GetAllTinklersC
 		});
 	}
 
-	private void callServer() {
-
-		QCApi.getAllTinklers(this);
-	}
-
 	@SuppressLint("ViewHolder")
 	public class TinklersAdapter extends ArrayAdapter<Tinkler> {
 
@@ -137,7 +140,20 @@ public class ProfileFragmentActivity extends Fragment implements GetAllTinklersC
 	}
 
 	@Override
-	public void onCompleteGetAllTinklers(ArrayList<Tinkler> tinklers, boolean success) {
+	public void onCompleteGetOnlineTinklers(ArrayList<Tinkler> tinklers, boolean success) {
+		if (success) {
+			mTinklers = tinklers;
+
+			mAdapter = new TinklersAdapter(getActivity(), tinklers);
+			mTinklersListView.setAdapter(mAdapter);
+		} else {
+			Toast.makeText(getActivity(), "Oops..", Toast.LENGTH_LONG).show();
+		}
+
+	}
+
+	@Override
+	public void onCompleteGetLocalTinklers(ArrayList<Tinkler> tinklers, boolean success) {
 		if (success) {
 			mTinklers = tinklers;
 

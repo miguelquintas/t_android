@@ -18,10 +18,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import api.QCApi;
-import api.QCApi.GetAllConversationsCallback;
+import api.QCApi.GetOnlineConversationsCallback;
+import api.QCApi.GetLocalConversationsCallback;
 import api.Utils;
 
-public class InboxFragmentActivity extends Fragment implements GetAllConversationsCallback {
+public class InboxFragmentActivity extends Fragment implements GetOnlineConversationsCallback, GetLocalConversationsCallback {
 
 	public static String MESSAGE = "MESSAGE";
 
@@ -33,7 +34,12 @@ public class InboxFragmentActivity extends Fragment implements GetAllConversatio
 	public void onStart() {
 		super.onStart();
 
-		callServer();
+		//Check internet connection
+		if(QCApi.isOnline()){
+			QCApi.getOnlineConversations(this);
+		}else{
+			QCApi.getLocalConversations(this);
+		}
 	}
 
 	@Override
@@ -64,11 +70,6 @@ public class InboxFragmentActivity extends Fragment implements GetAllConversatio
 				startActivity(intent);
 			}
 		});
-	}
-
-	private void callServer() {
-
-		QCApi.getAllConversations(this);
 	}
 
 	@SuppressLint("ViewHolder")
@@ -105,7 +106,19 @@ public class InboxFragmentActivity extends Fragment implements GetAllConversatio
 	}
 
 	@Override
-	public void onCompleteGetAllConversations(ArrayList<Conversation> conversations, boolean success) {
+	public void onCompleteGetOnlineConversations(ArrayList<Conversation> conversations, boolean success) {
+		if (success) {
+			mConversations = conversations;
+
+			mAdapter = new ConversationsAdapter(getActivity(), conversations);
+			mMessagesListView.setAdapter(mAdapter);
+		} else {
+			Toast.makeText(getActivity(), "Oops..", Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onCompleteGetLocalConversations(ArrayList<Conversation> conversations, boolean success) {
 		if (success) {
 			mConversations = conversations;
 
