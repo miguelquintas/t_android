@@ -109,7 +109,7 @@ public class InboxFragmentActivity extends Fragment implements GetOnlineConversa
 
 			Conversation conversation = conversations.get(position);
 			convName.setText(conversation.getToTinkler().get("name").toString());
-			convLastDate.setText(Utils.dateToString(conversation.getLastSentDate(), " HH:mm dd/MM/yy"));
+			convLastDate.setText(conversation.dateToString(conversation.getLastSentDate()));
 			ParseObject toTinkler = conversation.getToTinkler();
 			ParseFile image = toTinkler.getParseFile("picture");
 

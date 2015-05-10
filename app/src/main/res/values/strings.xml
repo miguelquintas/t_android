@@ -8,6 +8,11 @@
     <string name="action_websearch">Web search</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
 
+    <color name="black">#000</color>
+    <color name="white">#fff</color>
+    <color name="red_tinkler">#EE463E</color>
+    <color name="blue_tinkler">#00CEBA</color>
+
     <!-- arrays -->
 
     <string-array name="menu_array">

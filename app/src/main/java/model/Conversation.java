@@ -1,6 +1,9 @@
 package model;
 
+import android.util.Log;
+
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -81,4 +84,31 @@ public class Conversation implements Serializable{
 	public Boolean getIsLocked() {return isLocked;}
 
 	public void setIsLocked(Boolean isLocked){ this.isLocked = isLocked;}
+
+	public String dateToString(Date date){
+		Date today = new Date();
+		long diff = today.getTime() - date.getTime();
+		int intervalDays = (int) (diff / (24 * 60 * 60 * 1000));
+
+		Log.d("com.parse.push", "intervalDays: "+intervalDays);
+
+		//If it was sent today show "HH:mm"
+		if(intervalDays<1){
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+			return sdf.format(date);
+			//If it was sent yesterday show "Yesterday"
+		}else if(intervalDays==1){
+			return "Yesterday";
+			//If it was sent this week show day of the week "EEEE"
+		}else if(intervalDays<7){
+			SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
+			return sdf.format(date);
+			//If it was sent before this week show "dd/mm/yy"
+		}else{
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+			return sdf.format(date);
+		}
+
+	}
+
 }

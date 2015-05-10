@@ -24,10 +24,10 @@
     
     <TextView
         android:id="@+id/conv_date"
-        android:layout_width="fill_parent"
+        android:layout_width="70dp"
         android:layout_height="20dp"
         android:gravity="center_vertical"
-        android:layout_marginLeft="250dp"
+        android:layout_marginLeft="220dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/conv_image"
         android:textColor="#adadad"
