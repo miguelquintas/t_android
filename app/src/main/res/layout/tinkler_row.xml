@@ -6,36 +6,20 @@
     android:layout_marginRight="10dp">
     
     <TextView
-        android:id="@+id/brand"
+        android:id="@+id/name"
         android:layout_width="fill_parent"
         android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
         android:gravity="center_vertical"
-        android:layout_toLeftOf="@id/image"
+        android:layout_toRightOf="@id/image"
         android:text="brand"/>
     
-    <TextView
-        android:id="@+id/plate"
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"
-        android:layout_below="@id/brand"
-        android:layout_toLeftOf="@id/image"
-        android:gravity="center_vertical"
-        android:text="plate"/>
-    
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"
-        android:layout_below="@id/plate"
-        android:layout_toLeftOf="@id/image"
-        android:gravity="center_vertical"
-        android:text="date"/>
-    
-    <ImageView
+    <com.parse.ParseImageView
         android:id="@+id/image"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dp"/>
     
 </RelativeLayout>

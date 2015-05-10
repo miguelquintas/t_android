@@ -1,24 +1,38 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="40dp"
+    android:layout_height="60dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp">
-    
+
+    <com.parse.ParseImageView
+        android:id="@+id/conv_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="5dp"/>
+
     <TextView
-        android:id="@+id/type"
+        android:id="@+id/conv_name"
         android:layout_width="fill_parent"
         android:layout_height="20dp"
         android:gravity="center_vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/conv_image"
         android:text="type"/>
     
     <TextView
-        android:id="@+id/date"
+        android:id="@+id/conv_date"
         android:layout_width="fill_parent"
         android:layout_height="20dp"
-        android:layout_below="@id/type"
         android:gravity="center_vertical"
+        android:layout_marginLeft="250dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/conv_image"
         android:textColor="#adadad"
         android:text="date"/>
+
+
     
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseImageView;
+import com.parse.ParseObject;
+
 import api.QCApi;
 import api.QCApi.GetOnlineConversationsCallback;
 import api.QCApi.GetLocalConversationsCallback;
 import api.Utils;
+import model.Tinkler;
 
 public class InboxFragmentActivity extends Fragment implements GetOnlineConversationsCallback, GetLocalConversationsCallback {
 
@@ -87,19 +96,25 @@ public class InboxFragmentActivity extends Fragment implements GetOnlineConversa
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			TextView type;
-			TextView date;
+			TextView convName;
+			TextView convLastDate;
+			final ParseImageView picture;
 
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.message_row, parent, false);
 
-			type = (TextView) rowView.findViewById(R.id.type);
-			date = (TextView) rowView.findViewById(R.id.date);
+			convName = (TextView) rowView.findViewById(R.id.conv_name);
+			convLastDate = (TextView) rowView.findViewById(R.id.conv_date);
+			picture = (ParseImageView) rowView.findViewById(R.id.conv_image);
 
 			Conversation conversation = conversations.get(position);
+			convName.setText(conversation.getToTinkler().get("name").toString());
+			convLastDate.setText(Utils.dateToString(conversation.getLastSentDate(), " HH:mm dd/MM/yy"));
+			ParseObject toTinkler = conversation.getToTinkler();
+			ParseFile image = toTinkler.getParseFile("picture");
 
-			type.setText(conversation.getToTinkler().get("name").toString());
-			date.setText(Utils.dateToString(conversation.getLastSentDate(), " HH:mm dd/MM/yy"));
+			picture.setParseFile(image);
+			picture.loadInBackground();
 
 			return rowView;
 		}

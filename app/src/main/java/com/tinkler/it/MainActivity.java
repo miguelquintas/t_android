@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff73CACD));
+		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff00CEBA));
 		//getSupportActionBar().setDisplayHomeAsUpEnabled(false); // remove the left caret
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
 

@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +21,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseImageView;
+
 import api.QCApi;
 import api.QCApi.GetOnlineTinklersCallback;
 import api.QCApi.GetLocalTinklersCallback;
@@ -33,7 +40,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 	public static String EDIT_TINKLER = "EDIT";
 	public static String TINKLER = "TINKLER";
 
-	private TextView mUserNameTextView;
 	private ListView mTinklersListView;
 	private Button mAddTinklerButton;
 
@@ -65,7 +71,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 
 	private void initViews(View view) {
 
-		mUserNameTextView = (TextView) view.findViewById(R.id.user_name_text_view);
 		mTinklersListView = (ListView) view.findViewById(R.id.vehicles_list_view);
 		mAddTinklerButton = (Button) view.findViewById(R.id.add_vehicle_button);
 
@@ -112,26 +117,21 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			TextView brand;
-			TextView plate;
-			TextView date;
-			ImageView picture;
+			TextView name;
+			final ParseImageView picture;
 
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.tinkler_row, parent, false);
 
-			brand = (TextView) rowView.findViewById(R.id.brand);
-			plate = (TextView) rowView.findViewById(R.id.plate);
-			date = (TextView) rowView.findViewById(R.id.date);
-			picture = (ImageView) rowView.findViewById(R.id.image);
+			name = (TextView) rowView.findViewById(R.id.name);
+			picture = (ParseImageView) rowView.findViewById(R.id.image);
 
 			Tinkler tinkler = tinklers.get(position);
+			name.setText(tinkler.getName());
+			ParseFile image = tinkler.getImage();
+			picture.setParseFile(image);
+			picture.loadInBackground();
 
-			brand.setText(tinkler.getName());
-			plate.setText(tinkler.getVehiclePlate());
-
-			if(tinkler.getVehicleYear() != null)
-				date.setText(Utils.dateToString(tinkler.getVehicleYear(), "LLL yyyy"));
 
 			return rowView;
 		}

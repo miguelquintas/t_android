@@ -5,46 +5,23 @@
     android:layout_height="fill_parent"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp">
-
-    <TextView
-        android:id="@+id/user_name_text_view"
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:text="Diogo" />
-    
-    <TextView
-        android:id="@+id/list_title_text_view"
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/user_name_text_view"
-        android:layout_alignParentLeft="true"
-        android:gravity="center_vertical"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:text="My Vehicles" />
     
     <Button
         android:id="@+id/add_vehicle_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
         android:layout_marginTop="10dp"
-        android:layout_below="@id/user_name_text_view"
-        android:layout_alignParentRight="true"
-        android:background="@android:color/transparent"
-        android:textColor="#000"
+        android:layout_centerHorizontal="true"
+        android:background="#EE463E"
+        android:textColor="#FFF"
         android:textSize="16sp"
-        android:text="Add" />
+        android:text="create new" />
         
     <ListView
         android:id="@+id/vehicles_list_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/list_title_text_view"
+        android:layout_below="@id/add_vehicle_button"
         android:layout_marginTop="10dp"/>
 
 </RelativeLayout>

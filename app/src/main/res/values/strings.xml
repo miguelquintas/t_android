@@ -13,7 +13,7 @@
     <string-array name="menu_array">
         <item>Scan</item>
         <item>Inbox</item>
-        <item>Profile</item>
+        <item>Tinklers</item>
         <item>Logout</item>
     </string-array>
 
@@ -23,4 +23,5 @@
         <item>Bycicle</item>
         <item>Train</item>
     </string-array>
+    <string name="title_activity_tinkler_details">TinklerDetailsActivity</string>
 </resources>
