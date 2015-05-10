@@ -45,11 +45,9 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 		super.onStart();
 
 		//Check internet connection
-		if(QCApi.isOnline()){
-			System.out.println("Estou Online");
+		if(QCApi.isOnline(getActivity())){
 			QCApi.getOnlineTinklers(this);
 		}else{
-			System.out.println("Estou Offline");
 			QCApi.getLocalTinklers(this);
 		}
 	}

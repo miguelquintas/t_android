@@ -2,7 +2,9 @@ package com.tinkler.it;
 
 import com.parse.LogInCallback;
 import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -39,18 +41,18 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 		//Enable Local Datastore
 		Parse.enableLocalDatastore(getApplicationContext());
 		Parse.initialize(this, "cw3jgrLq6MFIDoaYln4DEKDsJeUIF3GACepXNiMN", "zqfETbeQXwLqDvcZeW0OHYnbPkpcmFt7VTRG6Roh");
+
 		//Enable Push Notifications
-		ParsePush.subscribeInBackground("", new SaveCallback() {
+		ParsePush.subscribeInBackground("global", new SaveCallback() {
 			@Override
 			public void done(ParseException e) {
 				if (e == null) {
-					Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+					Log.d("com.parse.push", "successfully subscribed to the global channel.");
 				} else {
 					Log.e("com.parse.push", "failed to subscribe for push", e);
 				}
 			}
 		});
-
 
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		if(currentUser != null){
@@ -92,7 +94,10 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 		if (mUsernameEditText.getText().length() == 0 || mPassswordEditText.getText().length() == 0){
 			Toast.makeText(getApplicationContext(), "Fill in all fields", Toast.LENGTH_LONG).show();
 		} else {
-			parseLogin();
+			if(QCApi.isOnline(this))
+				parseLogin();
+			else
+				Toast.makeText(getApplicationContext(), "You need network connectivity to log in", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -109,6 +114,21 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 			}
 		});
 	}
+
+	//Update the current install with the Tinkler user
+	private void updateCurrentParseInstall(){
+		ParseInstallation currentInstall = ParseInstallation.getCurrentInstallation();
+		currentInstall.put("user", ParseUser.getCurrentUser());
+		currentInstall.saveInBackground(new SaveCallback() {
+			public void done(ParseException e) {
+				if (e == null) {
+					Log.d("com.parse.push", "Installation saved successfully");
+				} else {
+					Log.e("com.parse.push", "Installation failed to save: " + e);
+				}
+			}
+		});
+	}
 	
 	private void userIsLoggedIn(){
 		Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -119,6 +139,7 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 	@Override
 	public void onCompleteVerify(boolean success) {
 		if (success){
+			updateCurrentParseInstall();
 			userIsLoggedIn();
 		} else {
 			Toast.makeText(this, "Activate your account first", Toast.LENGTH_LONG).show();

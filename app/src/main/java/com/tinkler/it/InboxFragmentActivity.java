@@ -35,7 +35,7 @@ public class InboxFragmentActivity extends Fragment implements GetOnlineConversa
 		super.onStart();
 
 		//Check internet connection
-		if(QCApi.isOnline()){
+		if(QCApi.isOnline(getActivity())){
 			QCApi.getOnlineConversations(this);
 		}else{
 			QCApi.getLocalConversations(this);

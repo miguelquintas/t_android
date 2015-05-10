@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +28,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 public class QCApi {
-
-	static Context context;
 
 	public static ArrayList<Tinkler> createTinklerObj(List<ParseObject> objects){
 		final ArrayList<Tinkler> tinklers = new ArrayList<Tinkler>();
@@ -574,20 +571,16 @@ public class QCApi {
 		});
 	}
 
-	public static boolean isOnline() {
-		try {
-			InetAddress ipAddr = InetAddress.getByName("parse.com"); //You can replace it with your name
+	public static boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-			if (ipAddr.equals("")) {
-				return false;
-			} else {
-				return true;
-			}
-
-		} catch (Exception e) {
-			return false;
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		// if no network is available networkInfo will be null
+		// otherwise check if we are connected
+		if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+			return true;
 		}
-
+		return false;
 	}
 
 	// Callbacks da vida
