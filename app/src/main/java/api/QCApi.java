@@ -36,7 +36,7 @@ public class QCApi {
 			Tinkler tinkler = new Tinkler();
 			tinkler.setId(object.getObjectId());
 			tinkler.setName(object.getString("name"));
-			tinkler.setType(object.getParseObject("vehicleType"));
+			tinkler.setType(object.getParseObject("type"));
 			tinkler.setOwner(object.getParseUser("owner"));
 			tinkler.setVehiclePlate(object.getString("vehiclePlate"));
 			tinkler.setVehicleYear(object.getDate("vehicleYear"));
@@ -55,6 +55,36 @@ public class QCApi {
 
 		return tinklers;
 	}
+
+	public static Tinkler getTinkler(String tinklerId){
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
+		Tinkler tinkler = new Tinkler();
+		try {
+			ParseObject object = query.get(tinklerId);
+
+			tinkler.setId(object.getObjectId());
+			tinkler.setName(object.getString("name"));
+			tinkler.setType(object.getParseObject("type"));
+			tinkler.setOwner(object.getParseUser("owner"));
+			tinkler.setVehiclePlate(object.getString("vehiclePlate"));
+			tinkler.setVehicleYear(object.getDate("vehicleYear"));
+			tinkler.setPetAge(object.getDate("petAge"));
+			tinkler.setPetBreed(object.getString("petBreed"));
+			tinkler.setColor(object.getString("color"));
+			tinkler.setBrand(object.getString("brand"));
+			tinkler.setLocationCity(object.getString("locationCity"));
+			tinkler.setEventDate(object.getDate("eventDate"));
+			tinkler.setAdType(object.getString("adType"));
+			tinkler.setImage(object.getParseFile("picture"));
+			tinkler.setTinkler(object.getParseFile("qrCode"));
+			tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return tinkler;
+	}
+
 
 	public static void getOnlineTinklers(final GetOnlineTinklersCallback callback) {
 

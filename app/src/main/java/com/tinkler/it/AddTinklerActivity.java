@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.parse.ParseObject;
+
 import java.util.Calendar;
 
 import api.QCApi;
@@ -24,6 +26,7 @@ import api.QCApi.DeleteTinklerCallback;
 import api.QCApi.EditTinklerCallback;
 import api.Utils;
 import model.Tinkler;
+import model.TinklerType;
 import utils.AttachImageActivity;
 
 public class AddTinklerActivity extends AttachImageActivity implements OnDateSetListener, AddTinklerCallback, EditTinklerCallback, DeleteTinklerCallback {
@@ -57,7 +60,9 @@ public class AddTinklerActivity extends AttachImageActivity implements OnDateSet
 		}
 
 		if (getIntent().hasExtra(ProfileFragmentActivity.TINKLER)) {
-			mTinkler = (Tinkler) getIntent().getExtras().getSerializable(ProfileFragmentActivity.TINKLER);
+			String tinklerId = getIntent().getExtras().getString(ProfileFragmentActivity.TINKLER);
+
+			mTinkler = QCApi.getTinkler(tinklerId);
 		}
 
 		tinklerNameEditText = (EditText) findViewById(R.id.tinkler_name);
@@ -75,9 +80,23 @@ public class AddTinklerActivity extends AttachImageActivity implements OnDateSet
 
 		if (mState.equals(ProfileFragmentActivity.EDIT_TINKLER)) {
 			tinklerNameEditText.setText(mTinkler.getName());
-			tinklerPlateEditText.setText(mTinkler.getVehiclePlate());
-			//tinklerTypeSpinner.setSelection(reverseTypeArray(mTinkler.getType()));
-			tinklerYearEditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
+
+			//Set Tinkler's data depending on its typ
+			String tinklerType = mTinkler.getType().get("typeName").toString();
+
+			if(tinklerType.equals("Vehicle")){
+				tinklerPlateEditText.setText(mTinkler.getVehiclePlate());
+				tinklerYearEditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
+			}else if(tinklerType.equals("Pet")){
+
+			}else if(tinklerType.equals("Realty or Location")){
+
+			}else if(tinklerType.equals("Object") || tinklerType.equals("Bag or Suitcase")){
+
+			}else if(tinklerType.equals("Advertisement")){
+
+			}
+
 
 			saveButton.setText("Edit Vehicle");
 			deleteButton.setVisibility(View.VISIBLE);

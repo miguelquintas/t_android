@@ -83,7 +83,7 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 
 				Intent intent = new Intent(getActivity(), AddTinklerActivity.class);
 				intent.putExtra(STATE, EDIT_TINKLER);
-				intent.putExtra(TINKLER, tinkler);
+				intent.putExtra(TINKLER, tinkler.getId());
 				startActivity(intent);
 			}
 		});
@@ -128,7 +128,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			ParseFile image = tinkler.getImage();
 			picture.setParseFile(image);
 			picture.loadInBackground();
-
 
 			return rowView;
 		}
