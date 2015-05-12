@@ -9,9 +9,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class AttachImageActivity extends Activity {
+public class AttachImageActivity extends AppCompatActivity {
 
 	protected static final String STATE_ATTACHED_IMAGE_FILE_URI = "STATE_ATTACHED_IMAGE_FILE_URI";
 	protected static final String STATE_IMAGE_FROM_CAMERA = "STATE_IMAGE_FROM_CAMERA";

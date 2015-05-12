@@ -82,9 +82,9 @@ public class AddTinklerActivity extends AttachImageActivity implements OnDateSet
 			saveButton.setText("Edit Vehicle");
 			deleteButton.setVisibility(View.VISIBLE);
 
-			getActionBar().setTitle("Edit Vehicle");
+			getSupportActionBar().setTitle("Edit Vehicle");
 		} else {
-			getActionBar().setTitle("Add Vehicle");
+			getSupportActionBar().setTitle("Add Vehicle");
 		}
 	}
 
