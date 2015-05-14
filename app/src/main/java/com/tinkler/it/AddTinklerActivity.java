@@ -16,11 +16,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.parse.ParseObject;
-
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import api.QCApi;
+import api.QCApi.GetLocalTinklerTypesCallback;
+import api.QCApi.GetOnlineTinklerTypesCallback;
 import api.QCApi.AddTinklerCallback;
 import api.QCApi.DeleteTinklerCallback;
 import api.QCApi.EditTinklerCallback;
@@ -29,7 +30,7 @@ import model.Tinkler;
 import model.TinklerType;
 import utils.AttachImageActivity;
 
-public class AddTinklerActivity extends AttachImageActivity implements OnDateSetListener, AddTinklerCallback, EditTinklerCallback, DeleteTinklerCallback {
+public class AddTinklerActivity extends AttachImageActivity implements GetOnlineTinklerTypesCallback, GetLocalTinklerTypesCallback, AddTinklerCallback, EditTinklerCallback, DeleteTinklerCallback, OnDateSetListener {
 
 	private EditText tinklerNameEditText;
 	private EditText tinklerPlateEditText;
@@ -48,6 +49,14 @@ public class AddTinklerActivity extends AttachImageActivity implements OnDateSet
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_tinkler);
+
+		//Get TinklerTypes from Parse
+		//Check internet connection
+		if(QCApi.isOnline(this)){
+			QCApi.getOnlineTinklerTypes(this);
+		}else{
+			QCApi.getLocalTinklerTypes(this);
+		}
 
 		initViews();
 		initListeners();
@@ -73,13 +82,13 @@ public class AddTinklerActivity extends AttachImageActivity implements OnDateSet
 		saveButton = (Button) findViewById(R.id.save_button);
 		deleteButton = (Button) findViewById(R.id.delete_button);
 
-		mTinklerTypesArray = getResources().getStringArray(R.array.vehicle_type_array);
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypesArray);
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		tinklerTypeSpinner.setAdapter(dataAdapter);
 
 		if (mState.equals(ProfileFragmentActivity.EDIT_TINKLER)) {
 			tinklerNameEditText.setText(mTinkler.getName());
+			tinklerTypeSpinner.setSelection(3);
 
 			//Set Tinkler's data depending on its typ
 			String tinklerType = mTinkler.getType().get("typeName").toString();
@@ -247,5 +256,37 @@ public class AddTinklerActivity extends AttachImageActivity implements OnDateSet
 				dialog.show();
 			}
 		};
+	}
+
+	@Override
+	public void onCompleteGetOnlineTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success) {
+		if (success) {
+			mTinklerTypesArray = new String[tinklerTypes.size()];
+
+			//populate the string array of types
+			for(int i =0; i<tinklerTypes.size(); i++) {
+				mTinklerTypesArray[i] = tinklerTypes.get(i).getName();
+			}
+
+		} else {
+			Toast.makeText(this, "Oops..", Toast.LENGTH_LONG).show();
+		}
+
+	}
+
+	@Override
+	public void onCompleteGetLocalTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success) {
+		if (success) {
+			mTinklerTypesArray = new String[tinklerTypes.size()];
+
+			//populate the string array of types
+			for(int i =0; i<tinklerTypes.size(); i++) {
+				mTinklerTypesArray[i] = tinklerTypes.get(i).getName();
+			}
+
+		} else {
+			Toast.makeText(this, "Oops..", Toast.LENGTH_LONG).show();
+		}
+
 	}
 }

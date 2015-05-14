@@ -8,7 +8,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,6 +45,12 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 	@Override
 	public void onStart() {
 		super.onStart();
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+		View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
 		//Check internet connection
 		if(QCApi.isOnline(getActivity())){
@@ -53,12 +58,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 		}else{
 			QCApi.getLocalTinklers(this);
 		}
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-		View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
 		initViews(view);
 		initListeners();

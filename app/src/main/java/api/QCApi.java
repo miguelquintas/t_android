@@ -58,6 +58,7 @@ public class QCApi {
 
 	public static Tinkler getTinkler(String tinklerId){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
+		query.fromPin("pinnedTinklers");
 		Tinkler tinkler = new Tinkler();
 		try {
 			ParseObject object = query.get(tinklerId);
@@ -215,7 +216,7 @@ public class QCApi {
 						public void done(ParseException e) {
 							if (e == null) {
 								ParseObject.pinAllInBackground("pinnedConversations", localobjects);
-							}else {
+							} else {
 								System.out.println("Error pinning conversations: " + e.getMessage());
 							}
 						}
@@ -483,11 +484,6 @@ public class QCApi {
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
 				if (e == null) {
-					if (objects.size() == 0) {
-						myMsgTypes.setCachePolicy(CachePolicy.CACHE_THEN_NETWORK);
-					} else {
-						myMsgTypes.setCachePolicy(CachePolicy.NETWORK_ONLY);
-					}
 
 					for (ParseObject object : objects) {
 						MessageType msgType = new MessageType();
@@ -506,37 +502,50 @@ public class QCApi {
 		});
 	}
 
-	public static void getAllTinklerTypes(final GetAllTinklerTypesCallback callback) {
+	public static ArrayList<TinklerType> createTinklerTypeObj(List<ParseObject> objects){
 		final ArrayList<TinklerType> typeNames = new ArrayList<TinklerType>();
 
+		for (ParseObject object : objects) {
+			TinklerType tinklerType = new TinklerType();
+			tinklerType.setId(object.getObjectId());
+			tinklerType.setName(object.getString("typeName"));
+			typeNames.add(tinklerType);
+		}
+
+		return typeNames;
+	}
+
+	public static void getOnlineTinklerTypes(final GetOnlineTinklerTypesCallback callback) {
 		final ParseQuery<ParseObject> myTinklerTypes = ParseQuery.getQuery("TinklerType");
 		myTinklerTypes.orderByAscending("createdAt");
-		myTinklerTypes.findInBackground(new FindCallback<ParseObject>() {
 
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				if (e == null) {
-					if (objects.size() == 0) {
-						myTinklerTypes.setCachePolicy(CachePolicy.CACHE_THEN_NETWORK);
-					} else {
-						myTinklerTypes.setCachePolicy(CachePolicy.NETWORK_ONLY);
-					}
+		try {
+			//Unpin previous objects and then pin new collected ones
+			final List<ParseObject> onlineobjects = myTinklerTypes.find();
+			ParseObject.unpinAll("pinnedTinklerTypes");
+			ParseObject.pinAll("pinnedTinklerTypes", onlineobjects);
 
-					for (ParseObject object : objects) {
-						TinklerType tinklerType = new TinklerType();
-						tinklerType.setId(object.getObjectId());
-						tinklerType.setName(object.getString("typeName"));
-
-						typeNames.add(tinklerType);
-					}
-
-					callback.onCompleteGetAllTinklerTypes(typeNames, true);
-				} else {
-					callback.onCompleteGetAllTinklerTypes(null, false);
-				}
-			}
-		});
+			callback.onCompleteGetOnlineTinklerTypes(createTinklerTypeObj(onlineobjects),true);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			callback.onCompleteGetOnlineTinklerTypes(null, false);
+		}
 	}
+
+	public static void getLocalTinklerTypes(final GetLocalTinklerTypesCallback callback){
+		final ParseQuery<ParseObject> myTinklerTypes = ParseQuery.getQuery("TinklerType");
+		myTinklerTypes.orderByAscending("createdAt");
+		myTinklerTypes.fromPin("pinnedTinklerTypes");
+
+		try {
+			final List<ParseObject> localobjects = myTinklerTypes.find();
+			callback.onCompleteGetLocalTinklerTypes(createTinklerTypeObj(localobjects), true);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			callback.onCompleteGetLocalTinklerTypes(null, false);
+		}
+	}
+
 
 	public static void confirmEmail(final String email, final VerifyEmailCallback callback) {
 
@@ -654,7 +663,11 @@ public class QCApi {
 		void onCompleteGetAllMessageTypes(ArrayList<MessageType> messageTypes, boolean success);
 	}
 
-	public interface GetAllTinklerTypesCallback {
-		void onCompleteGetAllTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success);
+	public interface GetLocalTinklerTypesCallback {
+		void onCompleteGetLocalTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success);
+	}
+
+	public interface GetOnlineTinklerTypesCallback {
+		void onCompleteGetOnlineTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success);
 	}
 }
