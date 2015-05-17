@@ -30,10 +30,6 @@ import api.Utils;
 
 public class ProfileFragmentActivity extends Fragment implements GetOnlineTinklersCallback, GetLocalTinklersCallback {
 
-	public static String STATE = "STATE";
-
-	public static String ADD_TINKLER = "ADD";
-	public static String EDIT_TINKLER = "EDIT";
 	public static String TINKLER = "TINKLER";
 
 	private ListView mTinklersListView;
@@ -80,8 +76,7 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				Tinkler tinkler = mTinklers.get(position);
 
-				Intent intent = new Intent(getActivity(), AddTinklerActivity.class);
-				intent.putExtra(STATE, EDIT_TINKLER);
+				Intent intent = new Intent(getActivity(), EditTinklerActivity.class);
 				intent.putExtra(TINKLER, tinkler.getId());
 				startActivity(intent);
 			}
@@ -92,7 +87,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), AddTinklerActivity.class);
-				intent.putExtra(STATE, ADD_TINKLER);
 				startActivity(intent);
 			}
 		});

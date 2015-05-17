@@ -41,7 +41,6 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 	private Button deleteButton;
 	private DatePickerDialog datePickerDialog;
 
-	private String mState;
 	private Tinkler mTinkler;
 	private String[] mTinklerTypesArray;
 
@@ -64,10 +63,6 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 
 	private void initViews() {
 
-		if (getIntent().hasExtra(ProfileFragmentActivity.STATE)) {
-			mState = getIntent().getExtras().getString(ProfileFragmentActivity.STATE);
-		}
-
 		if (getIntent().hasExtra(ProfileFragmentActivity.TINKLER)) {
 			String tinklerId = getIntent().getExtras().getString(ProfileFragmentActivity.TINKLER);
 
@@ -86,34 +81,7 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		tinklerTypeSpinner.setAdapter(dataAdapter);
 
-		if (mState.equals(ProfileFragmentActivity.EDIT_TINKLER)) {
-			tinklerNameEditText.setText(mTinkler.getName());
-			tinklerTypeSpinner.setSelection(3);
-
-			//Set Tinkler's data depending on its typ
-			String tinklerType = mTinkler.getType().get("typeName").toString();
-
-			if(tinklerType.equals("Vehicle")){
-				tinklerPlateEditText.setText(mTinkler.getVehiclePlate());
-				tinklerYearEditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
-			}else if(tinklerType.equals("Pet")){
-
-			}else if(tinklerType.equals("Realty or Location")){
-
-			}else if(tinklerType.equals("Object") || tinklerType.equals("Bag or Suitcase")){
-
-			}else if(tinklerType.equals("Advertisement")){
-
-			}
-
-
-			saveButton.setText("Edit Vehicle");
-			deleteButton.setVisibility(View.VISIBLE);
-
-			getSupportActionBar().setTitle("Edit Vehicle");
-		} else {
-			getSupportActionBar().setTitle("Add Vehicle");
-		}
+		getSupportActionBar().setTitle("New Tinkler");
 	}
 
 	private void initListeners() {
@@ -165,12 +133,7 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 			//tinkler.setType(type);
 			tinkler.setVehicleYear(Utils.stringToDate(year, "LLLL yyyy"));
 
-			if (mState.equals(ProfileFragmentActivity.ADD_TINKLER)) {
-				QCApi.addTinkler(tinkler, this);
-			} else {
-				tinkler.setId(mTinkler.getId());
-				QCApi.addTinkler(tinkler, this);
-			}
+			QCApi.addTinkler(tinkler, this);
 		}
 	}
 

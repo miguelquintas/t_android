@@ -41,6 +41,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".AddTinklerActivity" />
+        <activity android:name=".EditTinklerActivity" />
         <activity android:name=".MessagesActivity" />
 
         <!-- Parse Push Notification service -->
