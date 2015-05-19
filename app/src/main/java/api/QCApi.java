@@ -32,62 +32,62 @@ public class QCApi {
     public static ArrayList<Tinkler> createTinklerObj(List<ParseObject> objects) {
         final ArrayList<Tinkler> tinklers = new ArrayList<Tinkler>();
 
-		for (ParseObject object : objects) {
-			Tinkler tinkler = new Tinkler();
-			tinkler.setId(object.getObjectId());
-			tinkler.setName(object.getString("name"));
-			tinkler.setType(object.getParseObject("type"));
-			tinkler.setOwner(object.getParseUser("owner"));
-			tinkler.setVehiclePlate(object.getString("vehiclePlate"));
-			tinkler.setVehicleYear(object.getDate("vehicleYear"));
-			tinkler.setPetAge(object.getDate("petAge"));
-			tinkler.setPetBreed(object.getString("petBreed"));
-			tinkler.setColor(object.getString("color"));
-			tinkler.setBrand(object.getString("brand"));
-			tinkler.setLocationCity(object.getString("locationCity"));
-			tinkler.setEventDate(object.getDate("eventDate"));
-			tinkler.setAdType(object.getString("adType"));
-			tinkler.setImage(object.getParseFile("picture"));
-			tinkler.setTinkler(object.getParseFile("qrCode"));
-			tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
-			tinklers.add(tinkler);
-		}
+        for (ParseObject object : objects) {
+            Tinkler tinkler = new Tinkler();
+            tinkler.setId(object.getObjectId());
+            tinkler.setName(object.getString("name"));
+            tinkler.setType(object.getParseObject("type"));
+            tinkler.setOwner(object.getParseUser("owner"));
+            tinkler.setVehiclePlate(object.getString("vehiclePlate"));
+            tinkler.setVehicleYear(object.getDate("vehicleYear"));
+            tinkler.setPetAge(object.getDate("petAge"));
+            tinkler.setPetBreed(object.getString("petBreed"));
+            tinkler.setColor(object.getString("color"));
+            tinkler.setBrand(object.getString("brand"));
+            tinkler.setLocationCity(object.getString("locationCity"));
+            tinkler.setEventDate(object.getDate("eventDate"));
+            tinkler.setAdType(object.getString("adType"));
+            tinkler.setImage(object.getParseFile("picture"));
+            tinkler.setTinkler(object.getParseFile("qrCode"));
+            tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
+            tinklers.add(tinkler);
+        }
 
         return tinklers;
     }
 
-	public static Tinkler getTinkler(String tinklerId){
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
-		query.fromPin("pinnedTinklers");
-		Tinkler tinkler = new Tinkler();
-		try {
-			ParseObject object = query.get(tinklerId);
+    public static Tinkler getTinkler(String tinklerId) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
+        query.fromPin("pinnedTinklers");
+        Tinkler tinkler = new Tinkler();
+        try {
+            ParseObject object = query.get(tinklerId);
 
-			tinkler.setId(object.getObjectId());
-			tinkler.setName(object.getString("name"));
-			tinkler.setType(object.getParseObject("type"));
-			tinkler.setOwner(object.getParseUser("owner"));
-			tinkler.setVehiclePlate(object.getString("vehiclePlate"));
-			tinkler.setVehicleYear(object.getDate("vehicleYear"));
-			tinkler.setPetAge(object.getDate("petAge"));
-			tinkler.setPetBreed(object.getString("petBreed"));
-			tinkler.setColor(object.getString("color"));
-			tinkler.setBrand(object.getString("brand"));
-			tinkler.setLocationCity(object.getString("locationCity"));
-			tinkler.setEventDate(object.getDate("eventDate"));
-			tinkler.setAdType(object.getString("adType"));
-			tinkler.setImage(object.getParseFile("picture"));
-			tinkler.setTinkler(object.getParseFile("qrCode"));
-			tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
+            tinkler.setId(object.getObjectId());
+            tinkler.setName(object.getString("name"));
+            tinkler.setType(object.getParseObject("type"));
+            tinkler.setOwner(object.getParseUser("owner"));
+            tinkler.setVehiclePlate(object.getString("vehiclePlate"));
+            tinkler.setVehicleYear(object.getDate("vehicleYear"));
+            tinkler.setPetAge(object.getDate("petAge"));
+            tinkler.setPetBreed(object.getString("petBreed"));
+            tinkler.setColor(object.getString("color"));
+            tinkler.setBrand(object.getString("brand"));
+            tinkler.setLocationCity(object.getString("locationCity"));
+            tinkler.setEventDate(object.getDate("eventDate"));
+            tinkler.setAdType(object.getString("adType"));
+            tinkler.setImage(object.getParseFile("picture"));
+            tinkler.setTinkler(object.getParseFile("qrCode"));
+            tinkler.setTinklerQRCodeKey(object.getInt("qrCodeKey"));
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return tinkler;
-	}
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tinkler;
+    }
 
 
-	public static void getOnlineTinklers(final GetOnlineTinklersCallback callback) {
+    public static void getOnlineTinklers(final GetOnlineTinklersCallback callback) {
 
         final ParseQuery<ParseObject> query = ParseQuery.getQuery("Tinkler");
         query.whereEqualTo("owner", ParseUser.getCurrentUser());
@@ -210,17 +210,17 @@ public class QCApi {
                     //The find succeeded.
                     System.out.println("Successfully retrieved" + objects.size() + " conversations");
 
-					//Unpin previous objects and then pin new collected ones
-					final List<ParseObject> localobjects = objects;
-					ParseObject.unpinAllInBackground("pinnedConversations", new DeleteCallback() {
-						public void done(ParseException e) {
-							if (e == null) {
-								ParseObject.pinAllInBackground("pinnedConversations", localobjects);
-							} else {
-								System.out.println("Error pinning conversations: " + e.getMessage());
-							}
-						}
-					});
+                    //Unpin previous objects and then pin new collected ones
+                    final List<ParseObject> localobjects = objects;
+                    ParseObject.unpinAllInBackground("pinnedConversations", new DeleteCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                ParseObject.pinAllInBackground("pinnedConversations", localobjects);
+                            } else {
+                                System.out.println("Error pinning conversations: " + e.getMessage());
+                            }
+                        }
+                    });
 
                     callback.onCompleteGetOnlineConversations(createConversationObj(objects), true);
                 } else {
@@ -514,7 +514,7 @@ public class QCApi {
         });
     }
 
-    public static void getLocalMessageTypes(final GetAllLocalMessageTypesCallback callback){
+    public static void getLocalMessageTypes(final GetAllLocalMessageTypesCallback callback) {
         final ArrayList<MessageType> msgTypes = new ArrayList<MessageType>();
 
         final ParseQuery<ParseObject> myMsgTypes = ParseQuery.getQuery("MessageType");
@@ -524,7 +524,7 @@ public class QCApi {
         myMsgTypes.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null){
+                if (e == null) {
 
                     for (ParseObject object : objects) {
                         MessageType msgType = new MessageType();
@@ -542,6 +542,51 @@ public class QCApi {
             }
         });
     }
+
+    public static void getOnlineTinklerTypes(final GetOnlineTinklerTypesCallback callback) {
+        final ParseQuery<ParseObject> myTinklerTypes = ParseQuery.getQuery("TinklerType");
+        myTinklerTypes.orderByAscending("createdAt");
+
+        try {
+            //Unpin previous objects and then pin new collected ones
+            final List<ParseObject> onlineobjects = myTinklerTypes.find();
+            ParseObject.unpinAll("pinnedTinklerTypes");
+            ParseObject.pinAll("pinnedTinklerTypes", onlineobjects);
+
+            callback.onCompleteGetOnlineTinklerTypes(createTinklerTypeObj(onlineobjects),true);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            callback.onCompleteGetOnlineTinklerTypes(null, false);
+        }
+    }
+
+    public static void getLocalTinklerTypes(final GetLocalTinklerTypesCallback callback){
+        final ParseQuery<ParseObject> myTinklerTypes = ParseQuery.getQuery("TinklerType");
+        myTinklerTypes.orderByAscending("createdAt");
+        myTinklerTypes.fromPin("pinnedTinklerTypes");
+
+        try {
+            final List<ParseObject> localobjects = myTinklerTypes.find();
+            callback.onCompleteGetLocalTinklerTypes(createTinklerTypeObj(localobjects), true);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            callback.onCompleteGetLocalTinklerTypes(null, false);
+        }
+    }
+
+    public static ArrayList<TinklerType> createTinklerTypeObj(List<ParseObject> objects){
+        final ArrayList<TinklerType> typeNames = new ArrayList<TinklerType>();
+
+        for (ParseObject object : objects) {
+            TinklerType tinklerType = new TinklerType();
+            tinklerType.setId(object.getObjectId());
+            tinklerType.setName(object.getString("typeName"));
+            typeNames.add(tinklerType);
+        }
+
+        return typeNames;
+    }
+
 
     public static void getAllTinklerTypes(final GetAllTinklerTypesCallback callback) {
         final ArrayList<TinklerType> typeNames = new ArrayList<TinklerType>();
@@ -626,11 +671,11 @@ public class QCApi {
                                     callback.onValidateQRCode(true, false, false, false, true);
                                 } else if (banObjects.size() > 0) {
                                     callback.onValidateQRCode(true, false, false, true, false);
-                                } else if ((int)parseObject.get("qrCodeKey") != objectKey) {
+                                } else if ((int) parseObject.get("qrCodeKey") != objectKey) {
                                     callback.onValidateQRCode(true, false, false, false, false);
-                                } else if ((int)parseObject.get("qrCodeKey") == objectKey && (boolean)user.get("allowCustomMsg") == true) {
+                                } else if ((int) parseObject.get("qrCodeKey") == objectKey && (boolean) user.get("allowCustomMsg") == true) {
                                     callback.onValidateQRCode(true, true, true, false, false);
-                                } else if ((int)parseObject.get("qrCodeKey") == objectKey && (boolean)user.get("allowCustomMsg") == false) {
+                                } else if ((int) parseObject.get("qrCodeKey") == objectKey && (boolean) user.get("allowCustomMsg") == false) {
                                     callback.onValidateQRCode(true, true, false, false, false);
                                 }
                             } else {
@@ -652,11 +697,11 @@ public class QCApi {
 
             @Override
             public void done(String object, ParseException e) {
-            if (e == null) {
-                // success
-            } else {
-                 // error
-            }
+                if (e == null) {
+                    // success
+                } else {
+                    // error
+                }
             }
         });
     }
@@ -725,4 +770,13 @@ public class QCApi {
     public interface GetAllTinklerTypesCallback {
         void onCompleteGetAllTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success);
     }
+
+    public interface GetLocalTinklerTypesCallback {
+        void onCompleteGetLocalTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success);
+    }
+
+    public interface GetOnlineTinklerTypesCallback {
+        void onCompleteGetOnlineTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success);
+    }
+
 }
