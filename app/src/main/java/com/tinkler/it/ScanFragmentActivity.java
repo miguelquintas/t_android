@@ -1,132 +1,135 @@
 package com.tinkler.it;
 
-import net.sourceforge.zbar.Config;
-import net.sourceforge.zbar.Image;
-import net.sourceforge.zbar.ImageScanner;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
 import android.app.Fragment;
-import android.hardware.Camera;
-import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Camera.PreviewCallback;
-import android.hardware.Camera.Size;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
-public class ScanFragmentActivity extends Fragment{
+import java.util.ArrayList;
 
-	Button mButton;
-	private Camera mCamera;
-	private CameraPreview mPreview;
-	private Handler autoFocusHandler;
+import api.QCApi;
+import me.dm7.barcodescanner.zbar.Result;
+import me.dm7.barcodescanner.zbar.ZBarScannerView;
+import model.MessageType;
 
-	ImageScanner scanner;
+public class ScanFragmentActivity extends Fragment implements ZBarScannerView.ResultHandler {
 
-	private boolean barcodeScanned = false;
-	private boolean previewing = true;
+    private static final String TAG = ScanFragmentActivity.class.toString();
 
-	static {
-        System.loadLibrary("iconv");
+    private ZBarScannerView mScannerView;
+    private Spinner mTinklerTypeSpinner;
+    private ArrayList<MessageType> mTinklerTypesArray;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mScannerView = new ZBarScannerView(getActivity());
+        mTinklerTypesArray = new ArrayList<MessageType>();
+
+        if (QCApi.isOnline(getActivity())) {
+            QCApi.getMessageTypes(new QCApi.GetAllMessageTypesCallback() {
+                @Override
+                public void onCompleteGetAllMessageTypes(ArrayList<MessageType> messageTypes, boolean success) {
+                    for (int i = 0; i < messageTypes.size(); i++) {
+                        mTinklerTypesArray.addAll(messageTypes);
+                    }
+                }
+            });
+        }
+
+        mTinklerTypeSpinner = new Spinner(getActivity());
+        mTinklerTypeSpinner.setVisibility(View.GONE);
+        mScannerView.addView(mTinklerTypeSpinner);
+
+        return mScannerView;
     }
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
-		View view = inflater.inflate(R.layout.activity_scan, container, false);
-		
-		mButton = (Button) view.findViewById(R.id.button);
-		FrameLayout preview = (FrameLayout) view.findViewById(R.id.cameraPreview);
-		
-		autoFocusHandler = new Handler();
-		mCamera = getCameraInstance();
 
-		// Instance barcode scanner
-		scanner = new ImageScanner();
-		scanner.setConfig(0, Config.X_DENSITY, 3);
-		scanner.setConfig(0, Config.Y_DENSITY, 3);
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!QCApi.isOnline(getActivity())) {
+            mScannerView.stopCamera();
+            //TODO show warning
+        }
+    }
 
-		mPreview = new CameraPreview(getActivity(), mCamera, previewCb, autoFocusCB);
-		
-		preview.addView(mPreview);
+    @Override
+    public void onResume() {
+        super.onResume();
+        mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
+        mScannerView.startCamera();          // Start camera on resume
+    }
 
-		mButton.setOnClickListener(new OnClickListener() {
+    @Override
+    public void onPause() {
+        super.onPause();
+        mScannerView.stopCamera();           // Stop camera on pause
+    }
 
-			@Override
-			public void onClick(View v) {
-				if (barcodeScanned) {
-					barcodeScanned = false;
-					// scanText.setText("Scanning...");
-					mCamera.setPreviewCallback(previewCb);
-					mCamera.startPreview();
-					previewing = true;
-					mCamera.autoFocus(autoFocusCB);
-				}
-			}
-		});
-		
-		return view;
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		
-		mPreview.getHolder().removeCallback(mPreview);
-	}
-	
-	/** A safe way to get an instance of the Camera object. */
-	public static Camera getCameraInstance() {
-		Camera c = null;
-		try {
-			c = Camera.open();
-		} catch (Exception e) {
-		}
-		return c;
-	}
+    @Override
+    public void handleResult(Result rawResult) {
 
-	private Runnable doAutoFocus = new Runnable() {
-		public void run() {
-			if (previewing)
-				mCamera.autoFocus(autoFocusCB);
-		}
-	};
+        String qrUrl = rawResult.getContents();
 
-	PreviewCallback previewCb = new PreviewCallback() {
-		public void onPreviewFrame(byte[] data, Camera camera) {
-			Camera.Parameters parameters = camera.getParameters();
-			Size size = parameters.getPreviewSize();
+        if (qrUrl.contains("http://tinkler.it")) {
+            String objectData = qrUrl.split("\\?")[1];
+            final String scannedTinklerId = objectData.split("!")[0];
+            final String scannedTlinkerType = objectData.split("!")[1].split("\\&")[1];
+            final String scannedTinklerKey = objectData.split("!")[1].split("\\&")[0];
 
-			Image barcode = new Image(size.width, size.height, "Y800");
-			barcode.setData(data);
+            if (QCApi.isOnline(getActivity())) {
+                QCApi.validateQrCode(scannedTinklerId, Integer.parseInt(scannedTinklerKey), new QCApi.ValidateQRCodeCallback() {
+                    @Override
+                    public void onValidateQRCode(boolean success, boolean isValidated, boolean allowCustom, boolean isBlocked, boolean isSelfTinkler) {
+                        if (isSelfTinkler) {
+                            Toast.makeText(getActivity(), "This Tinkler belongs to you", Toast.LENGTH_LONG).show();
+                            //resetCamera();
+                            chooseMessageType(allowCustom, (String)scannedTlinkerType);
+                        } else if (isBlocked) {
+                            Toast.makeText(getActivity(), "This conversation is blocked", Toast.LENGTH_LONG).show();
+                            resetCamera();
+                        } else if (isValidated) {
+                            chooseMessageType(allowCustom, (String)scannedTlinkerType);
+                        } else {
+                            Toast.makeText(getActivity(), "This QR-Code is not valid", Toast.LENGTH_LONG).show();
+                            resetCamera();
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(getActivity(), "You need network connection to scan Tinklers", Toast.LENGTH_LONG).show();
+                resetCamera();
+            }
+        } else {
+            Toast.makeText(getActivity(), "This QR-Code was not generated by Tinkler", Toast.LENGTH_LONG).show();
+            resetCamera();
+        }
+    }
 
-			int result = scanner.scanImage(barcode);
+    private void resetCamera() {
+        mScannerView.stopCamera();
+        mScannerView.startCamera();
+    }
 
-			if (result != 0) {
-				previewing = false;
-				mCamera.setPreviewCallback(null);
-				mCamera.stopPreview();
+    private void chooseMessageType(boolean allowCustom, String scannedTinklerType) {
 
-				SymbolSet syms = scanner.getResults();
-				for (Symbol sym : syms) {
-					
-					System.out.println(sym.getData());
-					// scanText.setText("barcode result " + sym.getData());
-					barcodeScanned = true;
-				}
-			}
-		}
-	};
+        ArrayList<String> messagesType = new ArrayList<String>();
 
-	// Mimic continuous auto-focusing
-	AutoFocusCallback autoFocusCB = new AutoFocusCallback() {
-		public void onAutoFocus(boolean success, Camera camera) {
-			autoFocusHandler.postDelayed(doAutoFocus, 1000);
-		}
-	};
+        for (int i = 0; i < mTinklerTypesArray.size(); i++){
+            if (mTinklerTypesArray.get(i).getName().equals("Custom Message") && allowCustom){
+                messagesType.add(mTinklerTypesArray.get(i).getName());
+            } else if (mTinklerTypesArray.get(i).getTinklerType() != null && mTinklerTypesArray.get(i).getTinklerType().get("typeName").equals(scannedTinklerType)){
+                messagesType.add(mTinklerTypesArray.get(i).getName());
+            }
+        }
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, messagesType);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mTinklerTypeSpinner.setAdapter(dataAdapter);
+
+        mTinklerTypeSpinner.setVisibility(View.VISIBLE);
+    }
 }
