@@ -47,14 +47,15 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp" />
 
-    <com.parse.ParseImageView
+    <ImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:id="@+id/editTinklerQrCode"
         android:layout_below="@+id/editTinklerAtr02"
         android:layout_alignLeft="@+id/editTinklerAtr02"
         android:layout_alignStart="@+id/editTinklerAtr02"
-        android:layout_marginTop="15dp" />
+        android:layout_marginTop="15dp"
+        android:background="@drawable/default_qrcode" />
 
     <Button
         android:layout_width="130dp"

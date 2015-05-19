@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.parse.ParseFile;
 import com.parse.ParseImageView;
+import com.parse.ParseObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,14 +44,14 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
     private Spinner tinklerTypeSpinner;
     private EditText tinklerAtr02EditText;
     private ParseImageView tinklerImageView;
-    private ParseImageView qrCodeImageView;
     private Button updButton;
     private Button regButton;
     private Button delButton;
     private DatePickerDialog datePickerDialog;
 
     private Tinkler mTinkler;
-    private String[] mTinklerTypesArray;
+    private String[] mTinklerTypeNamesArray;
+    private ArrayList<TinklerType> mTinklerTypes;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,50 +74,84 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
 
         if (getIntent().hasExtra(ProfileFragmentActivity.TINKLER)) {
             String tinklerId = getIntent().getExtras().getString(ProfileFragmentActivity.TINKLER);
-
             mTinkler = QCApi.getTinkler(tinklerId);
         }
 
+        //set layout vars
         tinklerNameEditText = (EditText) findViewById(R.id.editTinklerName);
         tinklerAtr01EditText = (EditText) findViewById(R.id.editTinklerAtr01);
         tinklerTypeSpinner = (Spinner) findViewById(R.id.editTinklerSpinner);
         tinklerAtr02EditText = (EditText) findViewById(R.id.editTinklerAtr02);
         tinklerImageView = (ParseImageView) findViewById(R.id.editTinklerImage);
-        qrCodeImageView = (ParseImageView) findViewById(R.id.editTinklerQrCode);
         updButton = (Button) findViewById(R.id.editTinklerUpdBtn);
         regButton = (Button) findViewById(R.id.editTinklerRegBtn);
         delButton = (Button) findViewById(R.id.editTinklerDelBtn);
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypesArray);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypeNamesArray);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tinklerTypeSpinner.setAdapter(dataAdapter);
 
         tinklerNameEditText.setText(mTinkler.getName());
-
+        //Set the Tinkler Image
         ParseFile tinklerImage = mTinkler.getImage();
         tinklerImageView.setParseFile(tinklerImage);
         tinklerImageView.loadInBackground();
 
-        ParseFile qrCodeImage = mTinkler.getTinkler();
-        qrCodeImageView.setParseFile(qrCodeImage);
-        qrCodeImageView.loadInBackground();
+        //Set the Tinkler Type
+        tinklerTypeSpinner.setSelection(getTinklerTypePos(mTinkler.getType()));
 
-        tinklerTypeSpinner.setSelection(3);
-
-        //Set Tinkler's data depending on its typ
-        String tinklerType = mTinkler.getType().get("typeName").toString();
+        //Set Tinkler's data depending on its type
+        String tinklerType = mTinklerTypeNamesArray[getTinklerTypePos(mTinkler.getType())];
 
         if(tinklerType.equals("Vehicle")){
-            tinklerAtr01EditText.setText(mTinkler.getVehiclePlate());
-            tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
+            if(mTinkler.getVehiclePlate().isEmpty())
+                tinklerAtr01EditText.setHint("Vehicle Plate");
+            else
+                tinklerAtr01EditText.setText(mTinkler.getVehiclePlate());
+
+            if(mTinkler.getVehicleYear() == null)
+                tinklerAtr02EditText.setHint("Vehicle Year");
+            else
+                tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
         }else if(tinklerType.equals("Pet")){
+            if(mTinkler.getPetBreed().isEmpty())
+                tinklerAtr01EditText.setHint("Pet Breed");
+            else
+                tinklerAtr01EditText.setText(mTinkler.getPetBreed());
+
+            if(mTinkler.getPetAge() == null)
+                tinklerAtr02EditText.setHint("Pet Age");
+            else
+                tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getPetAge(), "LLL yyyy"));
 
         }else if(tinklerType.equals("Realty or Location")){
+            if(mTinkler.getLocationCity().isEmpty())
+                tinklerAtr01EditText.setHint("Location");
+            else
+                tinklerAtr01EditText.setText(mTinkler.getLocationCity());
 
+            tinklerAtr02EditText.setVisibility(View.INVISIBLE);
         }else if(tinklerType.equals("Object") || tinklerType.equals("Bag or Suitcase")){
+            if(mTinkler.getBrand().isEmpty())
+                tinklerAtr01EditText.setHint("Brand");
+            else
+                tinklerAtr01EditText.setText(mTinkler.getBrand());
+
+            if(mTinkler.getColor().isEmpty())
+                tinklerAtr02EditText.setHint("Color");
+            else
+                tinklerAtr02EditText.setText(mTinkler.getColor());
 
         }else if(tinklerType.equals("Advertisement")){
+            if(mTinkler.getAdType().isEmpty())
+                tinklerAtr01EditText.setHint("Type");
+            else
+                tinklerAtr01EditText.setText(mTinkler.getAdType());
 
+            if(mTinkler.getEventDate() == null)
+                tinklerAtr02EditText.setHint("Event Date");
+            else
+                tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getEventDate(), "LLL yyyy"));
         }
 
         getSupportActionBar().setTitle(mTinkler.getName());
@@ -163,7 +198,7 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         } else {
             String name = tinklerNameEditText.getText().toString();
             String plate = tinklerAtr01EditText.getText().toString();
-            String type = mTinklerTypesArray[tinklerTypeSpinner.getSelectedItemPosition()];
+            String type = mTinklerTypeNamesArray[tinklerTypeSpinner.getSelectedItemPosition()];
             String year = tinklerAtr02EditText.getText().toString();
 
             Tinkler tinkler = new Tinkler();
@@ -181,6 +216,14 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         QCApi.deleteTinkler(mTinkler, this);
     }
 
+    private int getTinklerTypePos(ParseObject tinklerType){
+        for(int i =0; i<mTinklerTypes.size(); i++) {
+            if(mTinklerTypes.get(i).getId().equals(tinklerType.getObjectId()))
+                return i;
+        }
+        return 0;
+    }
+
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day);
@@ -189,8 +232,8 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
     }
 
     private int reverseTypeArray(String type) {
-        for (int i = 0; i < mTinklerTypesArray.length; i++) {
-            if (type.equals(mTinklerTypesArray[i])) {
+        for (int i = 0; i < mTinklerTypeNamesArray.length; i++) {
+            if (type.equals(mTinklerTypeNamesArray[i])) {
                 return i;
             }
         }
@@ -253,11 +296,12 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
     @Override
     public void onCompleteGetOnlineTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success) {
         if (success) {
-            mTinklerTypesArray = new String[tinklerTypes.size()];
+            mTinklerTypeNamesArray = new String[tinklerTypes.size()];
+            mTinklerTypes = tinklerTypes;
 
             //populate the string array of types
             for(int i =0; i<tinklerTypes.size(); i++) {
-                mTinklerTypesArray[i] = tinklerTypes.get(i).getName();
+                mTinklerTypeNamesArray[i] = tinklerTypes.get(i).getName();
             }
 
         } else {
@@ -269,11 +313,11 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
     @Override
     public void onCompleteGetLocalTinklerTypes(ArrayList<TinklerType> tinklerTypes, boolean success) {
         if (success) {
-            mTinklerTypesArray = new String[tinklerTypes.size()];
-
+            mTinklerTypeNamesArray = new String[tinklerTypes.size()];
+            mTinklerTypes = tinklerTypes;
             //populate the string array of types
             for(int i =0; i<tinklerTypes.size(); i++) {
-                mTinklerTypesArray[i] = tinklerTypes.get(i).getName();
+                mTinklerTypeNamesArray[i] = tinklerTypes.get(i).getName();
             }
 
         } else {
