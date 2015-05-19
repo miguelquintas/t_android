@@ -8,7 +8,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,10 +30,6 @@ import api.Utils;
 
 public class ProfileFragmentActivity extends Fragment implements GetOnlineTinklersCallback, GetLocalTinklersCallback {
 
-	public static String STATE = "STATE";
-
-	public static String ADD_TINKLER = "ADD";
-	public static String EDIT_TINKLER = "EDIT";
 	public static String TINKLER = "TINKLER";
 
 	private ListView mTinklersListView;
@@ -46,6 +41,12 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 	@Override
 	public void onStart() {
 		super.onStart();
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+		View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
 		//Check internet connection
 		if(QCApi.isOnline(getActivity())){
@@ -53,12 +54,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 		}else{
 			QCApi.getLocalTinklers(this);
 		}
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-		View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
 		initViews(view);
 		initListeners();
@@ -81,9 +76,8 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				Tinkler tinkler = mTinklers.get(position);
 
-				Intent intent = new Intent(getActivity(), AddTinklerActivity.class);
-				intent.putExtra(STATE, EDIT_TINKLER);
-				intent.putExtra(TINKLER, tinkler);
+				Intent intent = new Intent(getActivity(), EditTinklerActivity.class);
+				intent.putExtra(TINKLER, tinkler.getId());
 				startActivity(intent);
 			}
 		});
@@ -93,7 +87,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), AddTinklerActivity.class);
-				intent.putExtra(STATE, ADD_TINKLER);
 				startActivity(intent);
 			}
 		});
@@ -128,7 +121,6 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			ParseFile image = tinkler.getImage();
 			picture.setParseFile(image);
 			picture.loadInBackground();
-
 
 			return rowView;
 		}

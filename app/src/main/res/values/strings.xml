@@ -22,11 +22,5 @@
         <item>Logout</item>
     </string-array>
 
-    <string-array name="vehicle_type_array">
-        <item>Car</item>
-        <item>Boat</item>
-        <item>Bycicle</item>
-        <item>Train</item>
-    </string-array>
     <string name="title_activity_tinkler_details">TinklerDetailsActivity</string>
 </resources>

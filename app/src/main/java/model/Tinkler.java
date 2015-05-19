@@ -1,5 +1,6 @@
 package model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -150,4 +151,5 @@ public class Tinkler implements Serializable{
 	public String getAdType() { return adType;}
 
 	public void setAdType(String adType) { this.adType = adType;}
+
 }
