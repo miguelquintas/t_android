@@ -417,8 +417,13 @@ public class QCApi {
                 tinklerObject.put("picture", tinkler.getImage());
             }
 
-            tinklerObject.put("qrCode", tinkler.getTinkler());
-            tinklerObject.put("qrCodeKey", tinkler.getTinklerQRCodeKey());
+            if (tinkler.getTinkler() != null){
+                tinklerObject.put("qrCode", tinkler.getTinkler());
+            }
+
+            if (tinkler.getTinklerQRCodeKey() != 0) {
+                tinklerObject.put("qrCodeKey", tinkler.getTinklerQRCodeKey());
+            }
 
             tinklerObject.saveInBackground(new SaveCallback() {
 

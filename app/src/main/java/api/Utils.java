@@ -1,5 +1,9 @@
 package api;
 
+import android.content.Context;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,5 +27,4 @@ public class Utils {
 		
 		return date;
 	}
-	
 }

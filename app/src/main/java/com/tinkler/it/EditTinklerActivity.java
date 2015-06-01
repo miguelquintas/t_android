@@ -6,17 +6,23 @@ import android.app.DatePickerDialog;
 import api.QCApi;
 import api.QCApi.GetLocalTinklerTypesCallback;
 import api.QCApi.GetOnlineTinklerTypesCallback;
-import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -39,6 +45,7 @@ import utils.AttachImageActivity;
  */
 public class EditTinklerActivity extends AttachImageActivity implements GetOnlineTinklerTypesCallback, GetLocalTinklerTypesCallback, EditTinklerCallback, DeleteTinklerCallback, OnDateSetListener {
 
+    private RelativeLayout parentLayout;
     private EditText tinklerNameEditText;
     private EditText tinklerAtr01EditText;
     private Spinner tinklerTypeSpinner;
@@ -48,6 +55,8 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
     private Button regButton;
     private Button delButton;
     private DatePickerDialog datePickerDialog;
+
+    private int tinklerPos;
 
     private Tinkler mTinkler;
     private String[] mTinklerTypeNamesArray;
@@ -75,9 +84,11 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         if (getIntent().hasExtra(ProfileFragmentActivity.TINKLER)) {
             String tinklerId = getIntent().getExtras().getString(ProfileFragmentActivity.TINKLER);
             mTinkler = QCApi.getTinkler(tinklerId);
+            tinklerPos = getIntent().getExtras().getInt(ProfileFragmentActivity.POS);
         }
 
         //set layout vars
+        parentLayout = (RelativeLayout) findViewById(R.id.editTinklerLayout);
         tinklerNameEditText = (EditText) findViewById(R.id.editTinklerName);
         tinklerAtr01EditText = (EditText) findViewById(R.id.editTinklerAtr01);
         tinklerTypeSpinner = (Spinner) findViewById(R.id.editTinklerSpinner);
@@ -90,6 +101,49 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypeNamesArray);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tinklerTypeSpinner.setAdapter(dataAdapter);
+
+        //Hide keyboard when pressing outside of it
+        parentLayout.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View view, MotionEvent ev)
+            {
+                hideKeyboard(view);
+                return false;
+            }
+        });
+
+        //Set TextField Adapters to Hide Keyboard
+        tinklerNameEditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(tinklerNameEditText.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
+        tinklerAtr01EditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(tinklerAtr01EditText.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
+        tinklerAtr02EditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(tinklerAtr02EditText.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
 
         tinklerNameEditText.setText(mTinkler.getName());
         //Set the Tinkler Image
@@ -191,6 +245,12 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         });
     }
 
+    protected void hideKeyboard(View view)
+    {
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
     private void validateForm() {
 
         if (tinklerNameEditText.getText().toString().isEmpty() || tinklerAtr01EditText.getText().toString().isEmpty() || tinklerAtr02EditText.getText().toString().isEmpty()) {
@@ -204,7 +264,8 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
             Tinkler tinkler = new Tinkler();
             tinkler.setName(name);
             tinkler.setVehiclePlate(plate);
-            //tinkler.setType(type);
+            //get the Tinkler type
+            tinkler.setType(mTinkler.getType());
             tinkler.setVehicleYear(Utils.stringToDate(year, "LLLL yyyy"));
 
             tinkler.setId(mTinkler.getId());
@@ -244,7 +305,15 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
     @Override
     public void onCompleteEdit(boolean success) {
         if (success) {
-            Toast.makeText(this, "Sucess", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Sucess", Toast.LENGTH_SHORT).show();
+            //Set the data to be updated when headed back to the fragment
+            Intent intent = new Intent();
+            Bundle changedTinkler = new Bundle();
+            changedTinkler.putString("TINKLER_NAME", tinklerNameEditText.getText().toString());
+            changedTinkler.putInt("POS", tinklerPos);
+            changedTinkler.putParcelable("TINKLER_IMAGE", tinklerImageView.getDrawingCache());
+            intent.putExtras(changedTinkler);
+            setResult(RESULT_OK , intent);
             finish();
         } else {
             Toast.makeText(this, "Oops", Toast.LENGTH_LONG).show();

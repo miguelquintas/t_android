@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import model.Tinkler;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,7 +33,9 @@ import api.Utils;
 public class ProfileFragmentActivity extends Fragment implements GetOnlineTinklersCallback, GetLocalTinklersCallback {
 
 	public static String TINKLER = "TINKLER";
-
+    public static String POS = "POS";
+	static final int PICK_TINKLER_EDIT = 1;  // The request code
+    static final int PICK_TINKLER_ADD = 2;  // The request code
 	private ListView mTinklersListView;
 	private Button mAddTinklerButton;
 
@@ -76,9 +80,10 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				Tinkler tinkler = mTinklers.get(position);
 
-				Intent intent = new Intent(getActivity(), EditTinklerActivity.class);
+                Intent intent = new Intent(getActivity(), EditTinklerActivity.class);
 				intent.putExtra(TINKLER, tinkler.getId());
-				startActivity(intent);
+                intent.putExtra(POS, position);
+                startActivityForResult(intent, PICK_TINKLER_EDIT);
 			}
 		});
 
@@ -87,7 +92,7 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), AddTinklerActivity.class);
-				startActivity(intent);
+				startActivityForResult(intent, PICK_TINKLER_ADD);
 			}
 		});
 	}
@@ -124,6 +129,25 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 
 			return rowView;
 		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		//If the results come from the EDIT menu
+		if (requestCode == PICK_TINKLER_EDIT) {
+			// Make sure the request was successful
+			if (resultCode == Activity.RESULT_OK) {
+                Bundle receivedData = data.getExtras();
+                mTinklers.get(receivedData.getInt("POS")).setName(receivedData.getString("TINKLER_NAME"));
+                mAdapter.notifyDataSetChanged();
+                Log.d("Received Data", "Updated Name:" + receivedData.getString("TINKLER_NAME"));
+                Log.d("Received Data", "Tinkler Position:" + receivedData.getInt("POS"));
+			}
+		}else if(requestCode == PICK_TINKLER_ADD) {
+            // Make sure the request was successful
+            if (resultCode == Activity.RESULT_OK) {}
+        }
+
 	}
 
 	@Override
