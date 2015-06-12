@@ -138,7 +138,9 @@ public class ProfileFragmentActivity extends Fragment implements GetOnlineTinkle
 			// Make sure the request was successful
 			if (resultCode == Activity.RESULT_OK) {
                 Bundle receivedData = data.getExtras();
+                //Set the updated Tinkler Name
                 mTinklers.get(receivedData.getInt("POS")).setName(receivedData.getString("TINKLER_NAME"));
+
                 mAdapter.notifyDataSetChanged();
                 Log.d("Received Data", "Updated Name:" + receivedData.getString("TINKLER_NAME"));
                 Log.d("Received Data", "Tinkler Position:" + receivedData.getInt("POS"));
