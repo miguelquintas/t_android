@@ -101,6 +101,7 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypeNamesArray);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tinklerTypeSpinner.setAdapter(dataAdapter);
+        tinklerTypeSpinner.setEnabled(false);
 
         //Hide keyboard when pressing outside of it
         parentLayout.setOnTouchListener(new View.OnTouchListener()
@@ -157,55 +158,72 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
         //Set Tinkler's data depending on its type
         String tinklerType = mTinklerTypeNamesArray[getTinklerTypePos(mTinkler.getType())];
 
-        if(tinklerType.equals("Vehicle")){
-            if(mTinkler.getVehiclePlate().isEmpty())
-                tinklerAtr01EditText.setHint("Vehicle Plate");
-            else
-                tinklerAtr01EditText.setText(mTinkler.getVehiclePlate());
+        switch (tinklerType) {
+            case "Vehicle":
+                if(mTinkler.getVehiclePlate().isEmpty())
+                    tinklerAtr01EditText.setHint("Vehicle Plate");
+                else
+                    tinklerAtr01EditText.setText(mTinkler.getVehiclePlate());
 
-            if(mTinkler.getVehicleYear() == null)
-                tinklerAtr02EditText.setHint("Vehicle Year");
-            else
-                tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
-        }else if(tinklerType.equals("Pet")){
-            if(mTinkler.getPetBreed().isEmpty())
-                tinklerAtr01EditText.setHint("Pet Breed");
-            else
-                tinklerAtr01EditText.setText(mTinkler.getPetBreed());
+                if(mTinkler.getVehicleYear() == null)
+                    tinklerAtr02EditText.setHint("Vehicle Year");
+                else
+                    tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getVehicleYear(), "LLL yyyy"));
+                break;
+            case "Pet":
+                if(mTinkler.getPetBreed().isEmpty())
+                    tinklerAtr01EditText.setHint("Pet Breed");
+                else
+                    tinklerAtr01EditText.setText(mTinkler.getPetBreed());
 
-            if(mTinkler.getPetAge() == null)
-                tinklerAtr02EditText.setHint("Pet Age");
-            else
-                tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getPetAge(), "LLL yyyy"));
+                if(mTinkler.getPetAge() == null)
+                    tinklerAtr02EditText.setHint("Pet Age");
+                else
+                    tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getPetAge(), "LLL yyyy"));
+                break;
+            case "Realty or Location":
+                if(mTinkler.getLocationCity().isEmpty())
+                    tinklerAtr01EditText.setHint("Location");
+                else
+                    tinklerAtr01EditText.setText(mTinkler.getLocationCity());
 
-        }else if(tinklerType.equals("Realty or Location")){
-            if(mTinkler.getLocationCity().isEmpty())
-                tinklerAtr01EditText.setHint("Location");
-            else
-                tinklerAtr01EditText.setText(mTinkler.getLocationCity());
+                tinklerAtr02EditText.setVisibility(View.INVISIBLE);
+                break;
+            case "Bag or Suitcase":
+                if(mTinkler.getBrand().isEmpty())
+                    tinklerAtr01EditText.setHint("Brand");
+                else
+                    tinklerAtr01EditText.setText(mTinkler.getBrand());
 
-            tinklerAtr02EditText.setVisibility(View.INVISIBLE);
-        }else if(tinklerType.equals("Object") || tinklerType.equals("Bag or Suitcase")){
-            if(mTinkler.getBrand().isEmpty())
-                tinklerAtr01EditText.setHint("Brand");
-            else
-                tinklerAtr01EditText.setText(mTinkler.getBrand());
+                if(mTinkler.getColor().isEmpty())
+                    tinklerAtr02EditText.setHint("Color");
+                else
+                    tinklerAtr02EditText.setText(mTinkler.getColor());
+                break;
+            case "Object":
+                if(mTinkler.getBrand().isEmpty())
+                    tinklerAtr01EditText.setHint("Brand");
+                else
+                    tinklerAtr01EditText.setText(mTinkler.getBrand());
 
-            if(mTinkler.getColor().isEmpty())
-                tinklerAtr02EditText.setHint("Color");
-            else
-                tinklerAtr02EditText.setText(mTinkler.getColor());
+                if(mTinkler.getColor().isEmpty())
+                    tinklerAtr02EditText.setHint("Color");
+                else
+                    tinklerAtr02EditText.setText(mTinkler.getColor());
+                break;
+            case "Advertisement":
+                if(mTinkler.getAdType().isEmpty())
+                    tinklerAtr01EditText.setHint("Type");
+                else
+                    tinklerAtr01EditText.setText(mTinkler.getAdType());
 
-        }else if(tinklerType.equals("Advertisement")){
-            if(mTinkler.getAdType().isEmpty())
-                tinklerAtr01EditText.setHint("Type");
-            else
-                tinklerAtr01EditText.setText(mTinkler.getAdType());
-
-            if(mTinkler.getEventDate() == null)
-                tinklerAtr02EditText.setHint("Event Date");
-            else
-                tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getEventDate(), "LLL yyyy"));
+                if(mTinkler.getEventDate() == null)
+                    tinklerAtr02EditText.setHint("Event Date");
+                else
+                    tinklerAtr02EditText.setText(Utils.dateToString(mTinkler.getEventDate(), "LLL yyyy"));
+                break;
+            default:
+                Toast.makeText(this, "Oops..", Toast.LENGTH_LONG).show();
         }
 
         getSupportActionBar().setTitle(mTinkler.getName());
@@ -257,16 +275,43 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
             Toast.makeText(this, "Fill all fields", Toast.LENGTH_LONG).show();
         } else {
             String name = tinklerNameEditText.getText().toString();
-            String plate = tinklerAtr01EditText.getText().toString();
             String type = mTinklerTypeNamesArray[tinklerTypeSpinner.getSelectedItemPosition()];
-            String year = tinklerAtr02EditText.getText().toString();
+            String attr01 = tinklerAtr01EditText.getText().toString();
+            String attr02 = tinklerAtr02EditText.getText().toString();
 
+            //Create the edited Tinkler object
             Tinkler tinkler = new Tinkler();
             tinkler.setName(name);
-            tinkler.setVehiclePlate(plate);
             //get the Tinkler type
             tinkler.setType(mTinkler.getType());
-            tinkler.setVehicleYear(Utils.stringToDate(year, "LLLL yyyy"));
+
+            switch (type) {
+                case "Vehicle":
+                    tinkler.setVehiclePlate(attr01);
+                    tinkler.setVehicleYear(Utils.stringToDate(attr02, "LLLL yyyy"));
+                    break;
+                case "Pet":
+                    tinkler.setPetBreed(attr01);
+                    tinkler.setPetAge(Utils.stringToDate(attr02, "LLLL yyyy"));
+                    break;
+                case "Realty or Location":
+                    tinkler.setLocationCity(attr01);
+                    break;
+                case "Bag or Suitcase":
+                    tinkler.setBrand(attr01);
+                    tinkler.setColor(attr02);
+                    break;
+                case "Object":
+                    tinkler.setBrand(attr01);
+                    tinkler.setColor(attr02);
+                    break;
+                case "Advertisement":
+                    tinkler.setAdType(attr01);
+                    tinkler.setEventDate(Utils.stringToDate(attr02, "LLLL yyyy"));
+                    break;
+                default:
+                    Toast.makeText(this, "Oops..", Toast.LENGTH_LONG).show();
+            }
 
             tinkler.setId(mTinkler.getId());
             QCApi.editTinkler(tinkler, this);
@@ -312,6 +357,7 @@ public class EditTinklerActivity extends AttachImageActivity implements GetOnlin
             changedTinkler.putString("TINKLER_NAME", tinklerNameEditText.getText().toString());
             changedTinkler.putInt("POS", tinklerPos);
             changedTinkler.putParcelable("TINKLER_IMAGE", tinklerImageView.getDrawingCache());
+
             intent.putExtras(changedTinkler);
             setResult(RESULT_OK , intent);
             finish();
