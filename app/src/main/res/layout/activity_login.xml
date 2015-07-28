@@ -3,39 +3,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
+    android:background="@color/blue_tinkler"
     tools:context=".LoginActivity" >
 
     <EditText
         android:id="@+id/username_edit_text"
-        android:layout_width="fill_parent"
+        android:layout_width="270dp"
         android:layout_height="50dp"
         android:inputType="textEmailAddress"
-        android:hint="username"/>
+        android:hint="email"
+        android:background="@color/white"
+        android:layout_above="@+id/password_edit_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp" />
     
     <EditText
         android:id="@+id/password_edit_text"
-        android:layout_width="fill_parent"
+        android:layout_width="270dp"
         android:layout_height="50dp"
-        android:layout_below="@id/username_edit_text"
         android:inputType="textPassword"
-        android:hint="password"/>
+        android:background="@color/white"
+        android:hint="password"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/username_edit_text"
+        android:layout_alignStart="@+id/username_edit_text"
+        android:layout_marginBottom="10dp" />
     
     <Button
         android:id="@+id/login_button"
-        android:layout_width="fill_parent"
+        android:layout_width="270dp"
         android:layout_height="50dp"
-        android:layout_below="@id/password_edit_text"
-        android:text="login"/>
-    
-    <TextView 
-        android:id="@+id/signup_text_view"
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"
-        android:layout_marginTop="5dp"
-        android:gravity="right"
-        android:layout_below="@id/login_button"
-        android:text="Sign up"/>
+        android:text="login"
+        android:background="@color/red_tinkler"
+        android:textColor="@color/white"
+        android:layout_below="@+id/password_edit_text"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageView"
+        android:background="@drawable/main_logo"
+        android:layout_above="@+id/username_edit_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="forgot your password?"
+        android:textColor="@color/white"
+        android:id="@+id/fgpw_textView"
+        android:layout_below="@+id/login_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:text="get started!"
+        android:id="@+id/register_button"
+        android:background="@color/red_tinkler"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="43dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="not registered yet?"
+        android:textColor="@color/white"
+        android:id="@+id/register_textView"
+        android:layout_above="@+id/register_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp" />
 
 </RelativeLayout>

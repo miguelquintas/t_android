@@ -29,13 +29,15 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 	private EditText mUsernameEditText;
 	private EditText mPassswordEditText;
 	private Button mLoginButton;
-	private TextView mSignupTextView;
+	private Button mSignupButton;
+	private TextView mForgotPwTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().hide();
+
 		setContentView(R.layout.activity_login);
 
 		//Enable Local Datastore
@@ -67,7 +69,8 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 		mUsernameEditText = (EditText) findViewById(R.id.username_edit_text);
 		mPassswordEditText = (EditText) findViewById(R.id.password_edit_text);
 		mLoginButton = (Button) findViewById(R.id.login_button);
-		mSignupTextView = (TextView) findViewById(R.id.signup_text_view);
+		mSignupButton = (Button) findViewById(R.id.register_button);
+		mForgotPwTextView = (TextView) findViewById(R.id.fgpw_textView);
 	}
 
 	public void initListeners() {
@@ -80,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements VerifyEmailCallb
 			}
 		});
 		
-		mSignupTextView.setOnClickListener(new OnClickListener() {
+		mSignupButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
