@@ -70,12 +70,8 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 		}
 
 		tinklerNameEditText = (EditText) findViewById(R.id.tinkler_name);
-		tinklerPlateEditText = (EditText) findViewById(R.id.tinkler_plate);
 		tinklerTypeSpinner = (Spinner) findViewById(R.id.tinkler_type_spinner);
-		tinklerYearEditText = (EditText) findViewById(R.id.tinkler_year);
 		tinklerImageView = (ImageView) findViewById(R.id.tinkler_image);
-		saveButton = (Button) findViewById(R.id.save_button);
-		deleteButton = (Button) findViewById(R.id.delete_button);
 
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypesArray);
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
