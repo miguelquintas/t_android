@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -74,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu items for use in the action bar
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_tinkler_details, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -94,12 +98,21 @@ public class MainActivity extends AppCompatActivity {
 		}
 		// Handle action buttons
 		switch (item.getItemId()) {
-		case R.id.action_websearch:
+			case R.id.action_websearch:
+				return true;
 
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.action_settings:
+				openSettings();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void openSettings(){
+		Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+		startActivity(intent);
+		finish();
 	}
 
 	/* The click listner for ListView in the navigation drawer */

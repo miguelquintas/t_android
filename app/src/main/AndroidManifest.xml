@@ -43,6 +43,7 @@
         <activity android:name=".AddTinklerActivity" />
         <activity android:name=".EditTinklerActivity" />
         <activity android:name=".MessagesActivity" />
+        <activity android:name=".SettingsActivity" />
 
         <!-- Parse Push Notification service -->
         <service android:name="com.parse.PushService" />
@@ -60,11 +61,11 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-<!--                   IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
+                <!-- IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.tinkler.it" />
             </intent-filter>
         </receiver>
-<!--             If you choose to subclass ParsePushBroadcastReceiver, change com.parse.ParsePushBroadcastReceiver above to your class name. -->
+        <!-- If you choose to subclass ParsePushBroadcastReceiver, change com.parse.ParsePushBroadcastReceiver above to your class name. -->
         <receiver
             android:name="com.parse.ParsePushBroadcastReceiver"
             android:exported="false" >
@@ -78,6 +79,7 @@
         <meta-data
             android:name="com.parse.push.notification_icon"
             android:resource="@mipmap/tinkler_icon" />
+
     </application>
 
 </manifest>

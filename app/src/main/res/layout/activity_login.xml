@@ -41,7 +41,7 @@
 
     <ImageView
         android:layout_width="300dp"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:id="@+id/imageView"
         android:background="@drawable/main_logo"
         android:layout_above="@+id/username_edit_text"
