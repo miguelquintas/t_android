@@ -1,45 +1,38 @@
 package com.tinkler.it;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+
 
 import api.QCApi;
 import api.QCApi.GetLocalTinklerTypesCallback;
 import api.QCApi.GetOnlineTinklerTypesCallback;
 import api.QCApi.AddTinklerCallback;
-import api.QCApi.DeleteTinklerCallback;
-import api.QCApi.EditTinklerCallback;
-import api.Utils;
 import model.Tinkler;
 import model.TinklerType;
 import utils.AttachImageActivity;
 
-public class AddTinklerActivity extends AttachImageActivity implements GetOnlineTinklerTypesCallback, GetLocalTinklerTypesCallback, AddTinklerCallback, EditTinklerCallback, DeleteTinklerCallback, OnDateSetListener {
+public class AddTinklerActivity extends AttachImageActivity implements GetOnlineTinklerTypesCallback, GetLocalTinklerTypesCallback, AddTinklerCallback {
 
 	private EditText tinklerNameEditText;
-	private EditText tinklerPlateEditText;
 	private Spinner tinklerTypeSpinner;
-	private EditText tinklerYearEditText;
 	private ImageView tinklerImageView;
-	private Button saveButton;
-	private Button deleteButton;
-	private DatePickerDialog datePickerDialog;
+	private Button nextButton;
 
 	private Tinkler mTinkler;
 	private String[] mTinklerTypesArray;
@@ -48,6 +41,8 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_tinkler);
+
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff00CEBA));
 
 		//Get TinklerTypes from Parse
 		//Check internet connection
@@ -63,26 +58,21 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 
 	private void initViews() {
 
-		if (getIntent().hasExtra(ProfileFragmentActivity.TINKLER)) {
-			String tinklerId = getIntent().getExtras().getString(ProfileFragmentActivity.TINKLER);
+        tinklerNameEditText = (EditText) findViewById(R.id.tinkler_name);
+        tinklerTypeSpinner = (Spinner) findViewById(R.id.tinkler_type_spinner);
+        tinklerImageView = (ImageView) findViewById(R.id.tinkler_image);
+        nextButton = (Button) findViewById(R.id.next_button);
 
-			mTinkler = QCApi.getTinkler(tinklerId);
-		}
-
-		tinklerNameEditText = (EditText) findViewById(R.id.tinkler_name);
-		tinklerTypeSpinner = (Spinner) findViewById(R.id.tinkler_type_spinner);
-		tinklerImageView = (ImageView) findViewById(R.id.tinkler_image);
-
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypesArray);
-		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		tinklerTypeSpinner.setAdapter(dataAdapter);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTinklerTypesArray);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tinklerTypeSpinner.setAdapter(dataAdapter);
 
 		getSupportActionBar().setTitle("New Tinkler");
 	}
 
 	private void initListeners() {
 
-		saveButton.setOnClickListener(new OnClickListener() {
+		nextButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -90,58 +80,21 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 			}
 		});
 
-		deleteButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				deleteTinkler();
-			}
-		});
-
-		tinklerYearEditText.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				final Calendar c = Calendar.getInstance();
-				int year = c.get(Calendar.YEAR);
-				int month = c.get(Calendar.MONTH);
-				int day = c.get(Calendar.DAY_OF_MONTH);
-
-				datePickerDialog = new DatePickerDialog(AddTinklerActivity.this, AddTinklerActivity.this, year, month, day);
-				datePickerDialog.show();
-			}
-		});
 	}
 
 	private void validateForm() {
 
-		if (tinklerNameEditText.getText().toString().isEmpty() || tinklerPlateEditText.getText().toString().isEmpty() || tinklerYearEditText.getText().toString().isEmpty()) {
+		if (tinklerNameEditText.getText().toString().isEmpty()) {
 			Toast.makeText(this, "Fill all fields", Toast.LENGTH_LONG).show();
 		} else {
-			String name = tinklerNameEditText.getText().toString();
-			String plate = tinklerPlateEditText.getText().toString();
-			String type = mTinklerTypesArray[tinklerTypeSpinner.getSelectedItemPosition()];
-			String year = tinklerYearEditText.getText().toString();
+            //Go to the submit screen
+            Fragment fragment = null;
+            fragment = new SubmitNewTinklerFragmentActivity();
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
 
-			Tinkler tinkler = new Tinkler();
-			tinkler.setName(name);
-			tinkler.setVehiclePlate(plate);
-			//tinkler.setType(type);
-			tinkler.setVehicleYear(Utils.stringToDate(year, "LLLL yyyy"));
-
-			QCApi.addTinkler(tinkler, this);
+            fragmentManager.beginTransaction().replace(R.id.add_new_tinkler_frame, fragment).commit();
 		}
-	}
-
-	private void deleteTinkler() {
-		QCApi.deleteTinkler(mTinkler, this);
-	}
-
-	public void onDateSet(DatePicker view, int year, int month, int day) {
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day);
-
-		tinklerYearEditText.setText(Utils.dateToString(cal.getTime(), "LLL yyyy"));
 	}
 
 	private int reverseTypeArray(String type) {
@@ -156,26 +109,6 @@ public class AddTinklerActivity extends AttachImageActivity implements GetOnline
 
 	@Override
 	public void onCompleteAdd(boolean success) {
-		if (success) {
-			Toast.makeText(this, "Sucess", Toast.LENGTH_LONG).show();
-			finish();
-		} else {
-			Toast.makeText(this, "Oops", Toast.LENGTH_LONG).show();
-		}
-	}
-
-	@Override
-	public void onCompleteEdit(boolean success) {
-		if (success) {
-			Toast.makeText(this, "Sucess", Toast.LENGTH_LONG).show();
-			finish();
-		} else {
-			Toast.makeText(this, "Oops", Toast.LENGTH_LONG).show();
-		}
-	}
-
-	@Override
-	public void onCompleteDelete(boolean success) {
 		if (success) {
 			Toast.makeText(this, "Sucess", Toast.LENGTH_LONG).show();
 			finish();

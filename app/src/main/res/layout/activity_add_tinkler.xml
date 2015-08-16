@@ -5,7 +5,8 @@
     android:layout_height="fill_parent"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
-    tools:context=".LoginActivity" >
+    android:id="@+id/add_new_tinkler_frame"
+    tools:context=".AddTinklerActivity" >
 
     <EditText
         android:id="@+id/tinkler_name"

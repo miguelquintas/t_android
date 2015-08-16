@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
 	private void openSettings(){
 		Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 		startActivity(intent);
-		finish();
 	}
 
 	/* The click listner for ListView in the navigation drawer */

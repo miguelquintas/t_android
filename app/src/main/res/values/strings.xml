@@ -23,4 +23,5 @@
     </string-array>
 
     <string name="title_activity_tinkler_details">TinklerDetailsActivity</string>
+    <string name="title_activity_new_tinkler">New Tinkler</string>
 </resources>

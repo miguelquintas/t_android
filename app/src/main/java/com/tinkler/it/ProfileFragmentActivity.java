@@ -3,6 +3,7 @@ package com.tinkler.it;
 import java.util.ArrayList;
 
 import model.Tinkler;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,8 +12,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ import com.parse.ParseImageView;
 import api.QCApi;
 import api.QCApi.GetOnlineTinklersCallback;
 import api.QCApi.GetLocalTinklersCallback;
-import api.Utils;
+
 
 public class ProfileFragmentActivity extends Fragment implements GetOnlineTinklersCallback, GetLocalTinklersCallback {
 
